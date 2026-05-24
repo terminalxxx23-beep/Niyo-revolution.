@@ -1,1 +1,284 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niyo Revolution - Global Publisher & AI Copyright Gatekeeper</title>
+    
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #4A148C; /* Purple */
+            --secondary-color: #7B1FA2;
+            --accent-color: #FFD700; /* Gold */
+            --bg-color: #F3E5F5;
+            --text-color: #333;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .auth-status {
+            background-color: #FFF9C4;
+            border: 1px dashed #FBC02D;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .pi-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(123, 31, 162, 0.3);
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .pi-btn:active {
+            transform: scale(0.98);
+        }
+
+        .badge {
+            background-color: #E1BEE7;
+            color: var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 16px;
+            text-transform: uppercase;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 8px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dash-card {
+            background: #FAFAFA;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .dash-card .num {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .dash-card .label {
+            font-size: 11px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+        .wallet-box {
+            border: 1px solid #CE93D8;
+            background-color: #FDF7FF;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .wallet-box p {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .wallet-box .detail {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .status-box {
+            background-color: #F5F5F5;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Niyo Revolution</h1>
+            <p>Global Publisher & AI Copyright Gatekeeper</p>
+        </div>
+
+        <div class="auth-status" id="auth-status-text">
+            Checking Pi Browser Authentication... 🔑
+        </div>
+
+        <button onclick="authenticateUser()" class="pi-btn">
+            Ingia na Pi Browser (Sign In with Pi)
+        </button>
+
+        <div class="badge">
+            NIYO AI MONITOR: Anti-Piracy Shield Scanning 🛡️
+        </div>
+
+        <div class="section-title">
+            Live Creator Analytics Dashboard
+        </div>
+        
+        <div class="wallet-box">
+            <p>📈 Dashboard ya Msanii (Real-time Analytics):</p>
+            <div class="dashboard-grid">
+                <div class="dash-card">
+                    <div class="num">0</div>
+                    <div class="label">Streams</div>
+                </div>
+                <div class="dash-card">
+                    <div class="num">0</div>
+                    <div class="label">Downloads</div>
+                </div>
+                <div class="dash-card">
+                    <div class="num">0</div>
+                    <div class="label">Likes</div>
+                </div>
+            </div>
+            <p><strong>Live Wallet Balance:</strong> <span style="color: green;">$0.00 USD</span></p>
+            <p class="detail">Threshold: $100</p>
+            <p class="detail">Akaunti ya Malipo: M-Pesa / Benki (<span id="user-payout-status">Haijatambulika</span>)</p>
+        </div>
+
+        <div class="section-title">
+            Copyright Protection Status
+        </div>
+        <div class="status-box">
+            🔒 <strong>SYSTEM INTEGRITY GATEWAY:</strong> Active<br>
+            Mifumo ya akili mnemba (AI) ipo tayari kulinda kazi zako dhidi ya wizi na usambazaji haramu mara tu utakapoingia kupitia Pi Network.
+        </div>
+    </div>
+
+    <script>
+        const PiSDK = window.Pi;
+
+        // Kuanzisha mfumo wa Pi kiotomatiki app inapofunguka
+        async function initPiAuth() {
+            try {
+                console.log("Inakagua mfumo wa Pi...");
+                // Kusubiri Pi.init imalize kikamilifu (Treat Pi.init as a Promise)
+                await PiSDK.init({ version: "2.0", sandbox: true }); 
+                
+                // Mfumo ukikaa sawa, unawasha login kiotomatiki
+                authenticateUser();
+            } catch (error) {
+                console.error("Pi SDK imefeli kuwaka:", error);
+                document.getElementById("auth-status-text").innerText = "Fungua App Hii Ndani ya Pi Browser pekee! ⚠️";
+                document.getElementById("auth-status-text").style.backgroundColor = "#FFCDD2";
+                document.getElementById("auth-status-text").style.borderColor = "#E53935";
+            }
+        }
+
+        // Mfumo wa kutambua Mtumiaji (Authentication) kwa kutumia "username" scope
+        async function authenticateUser() {
+            const scopes = ['username'];
+            document.getElementById("auth-status-text").innerText = "Inathibitisha akaunti ya Pi... ⏳";
+
+            try {
+                const authResult = await PiSDK.authenticate(scopes, onIncompletePaymentFound);
+                
+                // Tukifanikiwa kupata data
+                const username = authResult.user.username;
+                const accessToken = authResult.accessToken;
+                
+                // Kusasisha UI kuonyesha jina la mtumiaji
+                document.getElementById("auth-status-text").innerText = `Karibu, @${username}! ✅`;
+                document.getElementById("auth-status-text").style.backgroundColor = "#C8E6C9";
+                document.getElementById("auth-status-text").style.borderColor = "#4CAF50";
+                document.getElementById("user-payout-status").innerText = "Tayari Kuunganishwa";
+                
+                console.log("Access Token imepatikana kwa ajili ya Backend:", accessToken);
+                
+            } catch (error) {
+                console.error("Uthibitisho umefeli:", error);
+                document.getElementById("auth-status-text").innerText = "Uthibitisho Umefeli. Gusa kitufe ujaribu tena! ❌";
+                document.getElementById("auth-status-text").style.backgroundColor = "#FFCC80";
+                document.getElementById("auth-status-text").style.borderColor = "#FB8C00";
+            }
+        }
+
+        // Inashughulikia malipo yaliyokatika (Required by Pi SDK)
+        function onIncompletePaymentFound(payment) {
+            console.log("Kuna muamala uliokatika:", payment);
+        }
+
+        // Inawasha uzinduzi kiotomatiki ukurasa ukimaliza kuload
+        window.addEventListener('DOMContentLoaded', initPiAuth);
+    </script>
+</body>
+</html>
 
