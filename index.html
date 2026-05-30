@@ -1,563 +1,1418 @@
 <!DOCTYPE html>
-<html lang="sw">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Niyo Revolution - Sovereign Super App & Global Publisher</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background-color: #f4f6fa; margin: 0; padding: 20px; color: #222; padding-bottom: 80px; }
-        .app-container { max-width: 500px; margin: 20px auto; background: white; padding: 25px; border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); text-align: center; }
-        h1 { color: #6200ee; margin: 0 0 5px 0; font-size: 34px; font-weight: 800; }
-        .subtitle { color: #666; margin: 0 0 20px 0; font-size: 14px; letter-spacing: 0.5px; }
-        .section-title { text-align: left; font-size: 15px; font-weight: bold; margin: 25px 0 12px 0; color: #111; border-left: 4px solid #6200ee; padding-left: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Layout Boxes */
-        .barber-box, .market-box, .media-box, .player-box, .protection-box, .dashboard-box, .ai-dispute-box { background: #f8f9ff; border: 2px solid #e1e4f5; border-radius: 20px; padding: 20px; text-align: left; margin-bottom: 20px; }
-        .media-box { border-color: #ffb74d; background: #fffde7; }
-        .protection-box { border-color: #d32f2f; background: #ffebee; }
-        .dashboard-box { border-color: #6200ee; background: #f3e5f5; }
-        .player-box { border-color: #00bcd4; background: #e0f7fa; display: none; text-align: center; }
-        .ai-dispute-box { border-color: #e65100; background: #fff3e0; display: none; }
-        select, input, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #dcdfe6; font-size: 15px; margin: 8px 0; background: white; transition: 0.3s; }
-        
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; text-align: center; }
-        .stats-grid .stat-card { background: white; border: 1px solid #ce93d8; padding: 10px; border-radius: 12px; }
-        .stat-num { font-size: 18px; font-weight: bold; color: #6200ee; }
-        .stat-label { font-size: 11px; color: #666; }
+      * {
+        box-sizing: border-box;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      body {
+        background-color: #f4f6fa;
+        margin: 0;
+        padding: 20px;
+        color: #222;
+      }
+      .app-container {
+        max-width: 500px;
+        margin: 20px auto;
+        background: white;
+        padding: 25px;
+        border-radius: 28px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        text-align: center;
+      }
+      h1 {
+        color: #6200ee;
+        margin: 0 0 5px 0;
+        font-size: 34px;
+        font-weight: 800;
+      }
+      .subtitle {
+        color: #666;
+        margin: 0 0 20px 0;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+      .section-title {
+        text-align: left;
+        font-size: 15px;
+        font-weight: bold;
+        margin: 25px 0 12px 0;
+        color: #111;
+        border-left: 4px solid #6200ee;
+        padding-left: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-        .terms-scroll-box { background: #fafafa; border: 1px solid #ddd; padding: 12px; height: 130px; overflow-y: scroll; font-size: 11px; color: #555; line-height: 1.5; border-radius: 8px; margin-top: 8px; }
-        
-        .media-item { background: white; padding: 12px; border-radius: 14px; margin: 8px 0; display: flex; align-items: center; border: 1px solid #ffe0b2; gap: 12px; position: relative; }
-        .media-cover { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; background: #eee; }
-        .media-info { flex-grow: 1; font-size: 13px; }
-        
-        .cart-box { background: #fff8f0; border: 2px solid #ff9800; border-radius: 20px; padding: 15px; margin-bottom: 20px; text-align: left; }
-        .vendor-form, .artist-form { background: #f2faf3; border: 2px solid #a3e2a6; border-radius: 20px; padding: 22px; text-align: left; margin-bottom: 25px; display: none; }
-        .artist-form { background: #fff6ed; border-color: #ffcc80; }
-        
-        /* Action Buttons */
-        .btn-main { background-color: #6200ee; color: white; padding: 18px; border: none; border-radius: 50px; font-size: 16px; cursor: pointer; width: 100%; font-weight: bold; text-transform: uppercase; box-shadow: 0 6px 16px rgba(98, 0, 238, 0.25); }
-        .btn-vendor { background-color: #2e7d32; color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-artist { background-color: #e65100; color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-artist:disabled { background-color: #cccccc; cursor: not-allowed; }
-        .btn-action { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: white; margin-left: 4px; }
-        
-        /* Bottom bar for easy access */
-        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        .bottom-item { text-align: center; font-size: 11px; color: #555; cursor: pointer; flex: 1; }
+      /* Layout Boxes */
+      .barber-box,
+      .market-box,
+      .media-box,
+      .player-box,
+      .protection-box,
+      .dashboard-box,
+      .ai-dispute-box {
+        background: #f8f9ff;
+        border: 2px solid #e1e4f5;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: left;
+        margin-bottom: 20px;
+      }
+      .media-box {
+        border-color: #ffb74d;
+        background: #fffde7;
+      }
+      .protection-box {
+        border-color: #d32f2f;
+        background: #ffebee;
+      }
+      .dashboard-box {
+        border-color: #6200ee;
+        background: #f3e5f5;
+      }
+      .player-box {
+        border-color: #00bcd4;
+        background: #e0f7fa;
+        display: none;
+        text-align: center;
+      }
+      .ai-dispute-box {
+        border-color: #e65100;
+        background: #fff3e0;
+        display: none;
+      }
+      select,
+      input,
+      textarea {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #dcdfe6;
+        font-size: 15px;
+        margin: 8px 0;
+        background: white;
+        transition: 0.3s;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        margin-top: 10px;
+        text-align: center;
+      }
+      .stat-card {
+        background: white;
+        border: 1px solid #ce93d8;
+        padding: 10px;
+        border-radius: 12px;
+      }
+      .stat-num {
+        font-size: 18px;
+        font-weight: bold;
+        color: #6200ee;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: #666;
+      }
+
+      .terms-scroll-box {
+        background: #fafafa;
+        border: 1px solid #ddd;
+        padding: 12px;
+        height: 130px;
+        overflow-y: scroll;
+        font-size: 11px;
+        color: #555;
+        line-height: 1.5;
+        border-radius: 8px;
+        margin-top: 8px;
+      }
+
+      .media-item {
+        background: white;
+        padding: 12px;
+        border-radius: 14px;
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        border: 1px solid #ffe0b2;
+        gap: 12px;
+        position: relative;
+      }
+      .media-cover {
+        width: 55px;
+        height: 55px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #eee;
+      }
+      .media-info {
+        flex-grow: 1;
+        font-size: 13px;
+      }
+
+      .cart-box {
+        background: #fff8f0;
+        border: 2px solid #ff9800;
+        border-radius: 20px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: left;
+      }
+      .vendor-form,
+      .artist-form {
+        background: #f2faf3;
+        border: 2px solid #a3e2a6;
+        border-radius: 20px;
+        padding: 22px;
+        text-align: left;
+        margin-bottom: 25px;
+        display: none;
+      }
+      .artist-form {
+        background: #fff6ed;
+        border-color: #ffcc80;
+      }
+
+      /* Action Buttons */
+      .btn-main {
+        background-color: #6200ee;
+        color: white;
+        padding: 18px;
+        border: none;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        text-transform: uppercase;
+        box-shadow: 0 6px 16px rgba(98, 0, 238, 0.25);
+      }
+      .btn-vendor {
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        width: 100%;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .btn-artist {
+        background-color: #e65100;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        width: 100%;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .btn-artist:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      .btn-action {
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        margin-left: 4px;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <body>
     <div class="app-container">
-        <h1>Niyo Revolution</h1>
-        <p class="subtitle">Global Publisher & AI Copyright Gatekeeper</p>
+      <h1>Niyo Revolution</h1>
+      <p class="subtitle">Global Publisher & AI Copyright Gatekeeper</p>
 
-        <div id="pi-auth-status" style="background: #fff8e1; color: #f57f17; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: bold; margin-bottom: 18px; border: 1px solid #ffe082;">
-            Checking Pi Browser Authentication... 🔑
+      <div
+        id="pi-auth-status"
+        style="
+          background: #fff8e1;
+          color: #f57f17;
+          padding: 10px;
+          border-radius: 12px;
+          font-size: 13px;
+          font-weight: bold;
+          margin-bottom: 18px;
+          border: 1px solid #ffe082;
+        "
+      >
+        Checking Pi Browser Authentication... 🔑
+      </div>
+
+      <div
+        id="network-status"
+        style="
+          background: #e3f2fd;
+          color: #0d47a1;
+          padding: 9px;
+          border-radius: 10px;
+          font-size: 12px;
+          font-weight: bold;
+          margin-bottom: 18px;
+        "
+      >
+        NIYO AI MONITOR: Anti-Piracy Shield Scanning 🛡️
+      </div>
+
+      <div id="ai-dispute-zone" class="ai-dispute-box">
+        <h4 style="margin: 0 0 8px 0; color: #d84315">
+          ⚠️ NIYO AI: Copyright Infringement Detected!
+        </h4>
+        <p
+          id="ai-dispute-text"
+          style="
+            font-size: 12px;
+            color: #424242;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+          "
+        ></p>
+        <div
+          style="
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ffb74d;
+            font-size: 12px;
+            margin-bottom: 10px;
+          "
+        >
+          <strong>📞 Sehemu ya Mawasiliano ya Dharura:</strong><br />
+          Namba ya Mmiliki:
+          <span id="disp-owner-phone" style="color: #1565c0; font-weight: bold"
+            >--</span
+          ><br />
+          Namba ya Aliyecopy:
+          <span id="disp-copier-phone" style="color: #c62828; font-weight: bold"
+            >--</span
+          >
+        </div>
+        <button
+          id="btn-owner-approve"
+          class="btn-vendor"
+          style="background: #2e7d32"
+          onclick="mmilikiAruhusuWimboUshushweKiotomatiki()"
+        >
+          ✅ I Approve (Allow This Release to Go Live)
+        </button>
+      </div>
+
+      <div class="section-title">Live Creator Analytics Dashboard</div>
+      <div class="dashboard-box">
+        <div
+          style="
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4a148c;
+          "
+        >
+          📈 Dashboard ya Msanii (Real-time Analytics):
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div id="dash-streams" class="stat-num">0</div>
+            <div class="stat-label">🎧 Streams</div>
+          </div>
+          <div class="stat-card">
+            <div id="dash-downloads" class="stat-num">0</div>
+            <div class="stat-label">📥 Downloads</div>
+          </div>
+          <div class="stat-card">
+            <div id="dash-likes" class="stat-num">0</div>
+            <div class="stat-label">❤️ Likes</div>
+          </div>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #ce93d8; margin: 12px 0" />
+        <strong>Live Wallet Balance:</strong>
+        <span id="artist-live-balance" style="font-weight: bold; color: #2e7d32"
+          >$0.00 USD</span
+        >
+        | Threshold: $100<br />
+        <strong>Akaunti ya Malipo:</strong>
+        <span
+          id="active-payout-account"
+          style="color: #1565c0; font-size: 12px; font-weight: bold"
+          >M-Pesa / Benki Haiitambuliki</span
+        >
+
+        <div
+          id="smart-link-area"
+          style="
+            margin-top: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            border: 1px dashed #6200ee;
+            display: none;
+          "
+        >
+          <div style="font-size: 11px; font-weight: bold; color: #6200ee">
+            🔗 UNIVERSAL SMART-PROMO LINK GENERATED:
+          </div>
+          <input
+            type="text"
+            id="generated-promo-link"
+            readonly
+            style="
+              padding: 8px;
+              font-size: 12px;
+              margin: 5px 0;
+              text-align: center;
+              color: #7b1fa2;
+              font-weight: bold;
+              background: #f3e5f5;
+            "
+          />
+          <div
+            id="smart-link-note"
+            style="font-size: 9px; color: #555; font-weight: 500"
+          ></div>
+          <button
+            id="btn-edit-buffer"
+            class="btn-vendor"
+            style="background: #d32f2f; display: none; margin-top: 8px"
+            onclick="rekebishaFilamuMasaa48()"
+          >
+            ⚙️ Edit Movie Parameters (Next 48 Hours)
+          </button>
+        </div>
+      </div>
+
+      <div class="section-title">Copyright Protection Status</div>
+      <div class="protection-box">
+        <p
+          style="margin: 0; font-size: 11px; color: #c62828; font-weight: bold"
+        >
+          🔒 SYSTEM INTEGRITY GATEWAY: Nyimbo zote zinakaguliwa na Niyo AI kwa
+          masaa 24 kuzuia wizi wa kazi, na filamu zina buffer ya masaa 48
+          kulinda uwekezaji wako.
+        </p>
+      </div>
+
+      <div class="section-title">Barber & Salon Services</div>
+      <div class="barber-box">
+        <select id="huduma-select">
+          <option value="Kunyoa">Haircut / Kunyoa</option>
+          <option value="Masage">Massage</option>
+          <option value="Sucrabu">Scrub (Sucrabu)</option>
+          <option value="Superblack">Superblack</option>
+        </select>
+        <p id="price-display" class="price-text">Loading...</p>
+        <button
+          class="btn-vendor"
+          style="background: #6200ee"
+          id="btn-add-barber-cart"
+        >
+          Add to Cart
+        </button>
+      </div>
+
+      <div id="media-player-box" class="player-box">
+        <h4 id="player-title" style="margin: 0 0 12px 0; color: #00838f">
+          Sovereign Media Player
+        </h4>
+        <div id="audio-zone" style="display: none">
+          <audio id="app-audio-player" controls style="width: 100%"></audio>
+        </div>
+        <div id="video-zone" style="display: none">
+          <video
+            id="app-video-player"
+            controls
+            style="width: 100%; border-radius: 12px"
+          ></video>
+        </div>
+      </div>
+
+      <div class="section-title">Niyo Global Media Hub (Music & Movies)</div>
+      <div class="media-box">
+        <div id="media-container" style="margin-top: 10px">
+          <p style="font-size: 13px; color: #777">
+            Scanning content networks...
+          </p>
+        </div>
+      </div>
+
+      <div class="section-title">Open Marketplace</div>
+      <div class="market-box">
+        <div id="products-container" style="margin-top: 10px">
+          <p style="font-size: 13px; color: #777">Loading local stores...</p>
+        </div>
+      </div>
+
+      <div class="section-title">Logistics & Hospitality</div>
+      <div
+        class="grid-container"
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          margin-bottom: 25px;
+        "
+      >
+        <div
+          class="card"
+          style="
+            background: white;
+            border: 2px solid #f0f2f5;
+            border-radius: 18px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: left;
+          "
+          onclick="wekaHudumaMsetoKwenyeCart('Hotel Room Booking', 0.00035)"
+        >
+          <div style="font-weight: bold; font-size: 15px">Hotel Hub</div>
+          <div style="font-size: 12px; color: #777">0.00035 Pi / Night</div>
+        </div>
+        <div
+          class="card"
+          style="
+            background: white;
+            border: 2px solid #f0f2f5;
+            border-radius: 18px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: left;
+          "
+          onclick="wekaHudumaMsetoKwenyeCart('Ride-Hailing Transport', 0.000015)"
+        >
+          <div style="font-weight: bold; font-size: 15px">Ride-Hailing</div>
+          <div style="font-size: 12px; color: #777">0.000015 Pi / Trip</div>
+        </div>
+      </div>
+
+      <div class="section-title">Your Smart Cart</div>
+      <div class="cart-box">
+        <ul
+          id="cart-list"
+          style="padding-left: 20px; font-size: 14px; margin: 0 0 12px 0"
+        >
+          <li id="cart-empty">Cart is empty</li>
+        </ul>
+        <p
+          style="
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px 0;
+            text-align: right;
+          "
+          id="cart-total"
+        >
+          Total: 0.00000000 Pi
+        </p>
+      </div>
+
+      <div class="section-title">Creator Hub (Artists & Directors)</div>
+      <div
+        class="card"
+        style="
+          background: #fff6ed;
+          border: 2px solid #ffb74d;
+          border-radius: 18px;
+          padding: 15px;
+          cursor: pointer;
+          text-align: left;
+          margin-bottom: 15px;
+        "
+        onclick="onyeshaFomuYaWasanii()"
+      >
+        <div style="color: #e65100; font-weight: bold; font-size: 15px">
+          Global Content Distribution Portal
+        </div>
+        <div style="color: #ef6c00; font-size: 12px">
+          Music 24h AI Guard Gateway | Movies sell exclusively here after 48
+          hours verification.
+        </div>
+      </div>
+
+      <div id="fomu-wasanii" class="artist-form">
+        <h4 style="margin: 0 0 12px 0; color: #e65100">
+          Publish, Protect & Bank Profile
+        </h4>
+        <input
+          type="text"
+          id="a-name"
+          placeholder="Stage Name / Creator Name"
+          required
+        />
+        <select id="a-type">
+          <option value="Audio Track">
+            Audio Track (Music - 24h AI Inspection Gate)
+          </option>
+          <option value="Video File">
+            Video File (Movie / Film - Exclusive 48h Buffer)
+          </option>
+        </select>
+        <input
+          type="text"
+          id="a-title"
+          placeholder="Release Title / Kichwa cha Wimbo"
+          required
+        />
+        <input
+          type="text"
+          id="a-phone"
+          placeholder="Namba yako ya Simu ya Waswasiliano"
+          required
+        />
+        <input
+          type="number"
+          step="any"
+          id="a-price"
+          placeholder="Streaming/Purchase Price (Pi)"
+          required
+        />
+
+        <label
+          style="
+            font-size: 11px;
+            font-weight: bold;
+            color: #e65100;
+            display: block;
+            margin-top: 6px;
+          "
+          >Upload Album Cover / Movie Poster (Max 3MB):</label
+        >
+        <input type="file" id="a-cover-input" accept="image/*" required />
+
+        <label
+          style="
+            font-size: 11px;
+            font-weight: bold;
+            color: #e65100;
+            display: block;
+            margin-top: 6px;
+          "
+          >Upload Master File (HQ Studio Audio / Full Movie):</label
+        >
+        <input
+          type="file"
+          id="a-file-input"
+          accept="audio/*,video/*"
+          required
+        />
+
+        <label
+          style="
+            font-size: 12px;
+            font-weight: bold;
+            color: #1565c0;
+            display: block;
+            margin-top: 12px;
+          "
+          >Akaunti ya Kupokelea Malipo (Inaruhusiwa Kubadilisha Muda
+          Wowote):</label
+        >
+        <select id="a-bank-provider">
+          <option value="M-Pesa">Vodacom M-Pesa</option>
+          <option value="TigoPesa">Tigo Pesa</option>
+          <option value="AirtelMoney">Airtel Money</option>
+          <option value="CRDB Bank">CRDB Bank Plc</option>
+          <option value="NMB Bank">NMB Bank Plc</option>
+          <option value="PiWallet">Pi Network Core Wallet</option>
+        </select>
+        <input
+          type="text"
+          id="a-account-number"
+          placeholder="Weka Namba ya Akaunti / Simu Hapa"
+          required
+        />
+        <button
+          type="button"
+          class="btn-vendor"
+          style="background: #1565c0; margin: 4px 0 12px 0"
+          id="btn-update-account"
+        >
+          Update/Save Payout Account
+        </button>
+
+        <label
+          style="
+            font-size: 12px;
+            font-weight: bold;
+            color: #c62828;
+            display: block;
+            margin-top: 10px;
+          "
+          >Masharti na Vigezo / Global Rights & Distribution Contract:</label
+        >
+        <div class="terms-scroll-box">
+          1. AI ANTI-COPY SHIELD & SPECTRUM ANALYSIS: Ukipandisha Muziki, Niyo
+          AI itafanya ukaguzi ndani ya masaa 24. Ukipatikana umecopy kazi ya
+          mtu, wimbo hautapanda hadi mmiliki orijino akubali kwa mkono wake
+          kiotomatiki.<br />
+          2. UMILIKAJI WA FILAMU: Msanii unabaki kumiliki filamu yako kwa 100%
+          ndani ya Niyo Revolution, itakaa masaa 48 kabla ya kuwa live ili
+          uikague.<br />
+          3. MAKATO YA MFUMO: Niyo Revolution inakata 4% ya mapato yako mara tu
+          unapofikia kiwango cha kutoa fedha.<br />
+          4. THRESHOLD YA MALIPO: Ili mapato yako yatumwe kwenye akaunti yako
+          (iwe ya muziki au filamu), lazima yafike **Dola Mia Moja ($100 USD)**
+          chini ya hapo yatabaki salama kwenye mfumo wetu.<br />
+          5. MALIPO YA KIOTOMATIKI: Mara tu unapofikisha au kuvuka $100 USD,
+          mfumo utakata 4% na kukutumia 96% ya mapato yako moja kwa moja kwenye
+          akaunti uliyosajili kiotomatiki.
         </div>
 
-        <div id="network-status" style="background: #e3f2fd; color: #0d47a1; padding: 9px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 18px;">
-            NIYO AI MONITOR: Anti-Piracy Shield Scanning 🛡️
+        <div
+          style="
+            margin-top: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+          "
+        >
+          <input
+            type="checkbox"
+            id="a-legal-check"
+            style="width: auto; margin-top: 4px"
+          />
+          <label for="a-legal-check" style="font-size: 11px; color: #333"
+            >Nimeelewa kuwa NIYO AI itakagua wimbo wangu ndani ya masaa 24, na
+            kuzuia nakala isiyo na idhini.</label
+          >
         </div>
+        <input
+          type="text"
+          id="a-signature"
+          placeholder="Weka Jina Lako Kamili kama Saini ya Kidijitali"
+          required
+        />
 
-        <div id="section-auth" class="barber-box" style="background: #f3e5f5; border-color: #aa00ff;">
-            <h4 style="margin:0 0 8px 0; color:#4a148c;">Fungua Akaunti Bure Kabisa 🚀</h4>
-            <input type="text" id="free-username" placeholder="Weka Jina la Kisanii / Biashara">
-            <select id="free-role">
-                <option value="Muziki">Msanii wa Muziki (Global Publisher)</option>
-                <option value="Filamu">Muandaaji wa Filamu (Cinema)</option>
-                <option value="Mteja">Mteja / Mnunuzi wa Kawaida</option>
-            </select>
-            <button class="btn-vendor" style="background:#4a148c;" onclick="tengenezaAkauntiBure()">Sajili Akaunti Bure</button>
+        <button class="btn-artist" id="btn-sajili-sanaa" disabled>
+          Publish & Launch Distribution
+        </button>
+      </div>
+
+      <div class="section-title">Merchant Hub</div>
+      <div
+        class="card"
+        style="
+          background: #f2faf3;
+          border: 2px solid #81c784;
+          border-radius: 18px;
+          padding: 15px;
+          cursor: pointer;
+          text-align: left;
+          margin-bottom: 25px;
+        "
+        onclick="onyeshaFomuYaWauzaji()"
+      >
+        <div style="color: #2e7d32; font-weight: bold; font-size: 15px">
+          Vendor Registration Portal
         </div>
-
-        <div id="ai-dispute-zone" class="ai-dispute-box">
-            <h4 style="margin:0 0 8px 0; color:#d84315;">⚠️ NIYO AI: Copyright Infringement Detected!</h4>
-            <p id="ai-dispute-text" style="font-size:12px; color:#424242; margin:0 0 10px 0; line-height:1.4;"></p>
-            <div style="background:white; padding:10px; border-radius:10px; border:1px solid #ffb74d; font-size:12px; margin-bottom:10px;">
-                <strong>📞 Sehemu ya Mawasiliano ya Dharura:</strong><br>
-                Namba ya Mmiliki: <span id="disp-owner-phone" style="color:#1565c0; font-weight:bold;">--</span><br>
-                Namba ya Aliyecopy: <span id="disp-copier-phone" style="color:#c62828; font-weight:bold;">--</span>
-            </div>
-            <button id="btn-owner-approve" class="btn-vendor" style="background:#2e7d32;" onclick="mmilikiAruhusuWimboUshushweKiotomatiki()">✅ I Approve (Allow This Release to Go Live)</button>
+        <div style="color: #4caf50; font-size: 12px">
+          Sell physical items instantly - 1.5% structural transaction fee.
         </div>
+      </div>
 
-        <div class="section-title">Live Creator Analytics Dashboard</div>
-        <div class="dashboard-box">
-            <div style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#4a148c;">📈 Dashboard ya Msanii (Real-time Analytics):</div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div id="dash-streams" class="stat-num">0</div>
-                    <div class="stat-label">🎧 Streams</div>
-                </div>
-                <div class="stat-card">
-                    <div id="dash-downloads" class="stat-num">0</div>
-                    <div class="stat-label">📥 Downloads</div>
-                </div>
-                <div class="stat-card">
-                    <div id="dash-likes" class="stat-num">0</div>
-                    <div class="stat-label">❤️ Likes</div>
-                </div>
-            </div>
-            <hr style="border: 0; border-top: 1px solid #ce93d8; margin: 12px 0;">
-            <strong>Live Wallet Balance:</strong> <span id="artist-live-balance" style="font-weight:bold; color:#2e7d32;">$0.00 USD</span> | Threshold: $100<br>
-            <strong>Akaunti ya Malipo:</strong> <span id="active-payout-account" style="color:#1565c0; font-size:12px; font-weight: bold;">M-Pesa / Benki Haiitambuliki</span>
-            
-            <div id="smart-link-area" style="margin-top: 12px; padding: 10px; background: white; border-radius: 10px; border: 1px dashed #6200ee; display: none;">
-                <div style="font-size: 11px; font-weight: bold; color: #6200ee;">🔗 UNIVERSAL SMART-PROMO LINK GENERATED:</div>
-                <input type="text" id="generated-promo-link" readonly style="padding: 8px; font-size: 12px; margin: 5px 0; text-align: center; color: #7b1fa2; font-weight: bold; background: #f3e5f5;">
-                <div id="smart-link-note" style="font-size: 9px; color: #555; font-weight: 500;"></div>
-                <button id="btn-edit-buffer" class="btn-vendor" style="background:#d32f2f; display:none; margin-top:8px;" onclick="rekebishaFilamuMasaa48()">⚙️ Edit Movie Parameters (Next 48 Hours)</button>
-            </div>
-        </div>
+      <div id="fomu-wauzaji" class="vendor-form">
+        <h4 style="margin: 0 0 12px 0; color: #2e7d32">
+          Register Store Product
+        </h4>
+        <input type="text" id="v-name" placeholder="Full Name" required />
+        <input type="text" id="v-shop" placeholder="Shop/Brand Name" required />
+        <input type="text" id="v-p-name" placeholder="Product Name" required />
+        <input
+          type="number"
+          step="any"
+          id="v-p-price"
+          placeholder="Price in Pi"
+          required
+        />
+        <input
+          type="text"
+          id="v-wallet"
+          placeholder="Merchant Pi Wallet Address"
+          required
+        />
+        <button class="btn-vendor" id="btn-sajili-bidhaa">
+          Post Item Free
+        </button>
+      </div>
 
-        <div class="section-title">Copyright Protection Status</div>
-        <div class="protection-box">
-            <p style="margin: 0; font-size: 11px; color: #c62828; font-weight: bold;">
-                🔒 SYSTEM INTEGRITY GATEWAY: Nyimbo zote zinakaguliwa na Niyo AI kwa masaa 24 kuzuia wizi wa kazi, na filamu zina buffer ya masaa 48 kulinda uwekezaji wako.
-            </p>
-        </div>
-
-        <div class="section-title">Barber & Salon Services</div>
-        <div class="barber-box">
-            <select id="huduma-select">
-                <option value="Kunyoa">Haircut / Kunyoa</option>
-                <option value="Masage">Massage</option>
-                <option value="Sucrabu">Scrub (Sucrabu)</option>
-                <option value="Superblack">Superblack</option>
-            </select>
-            <p id="price-display" class="price-text">Loading...</p>
-            <button class="btn-vendor" style="background:#6200ee;" id="btn-add-barber-cart">Add to Cart</button>
-        </div>
-
-        <div id="media-player-box" class="player-box">
-            <h4 id="player-title" style="margin: 0 0 12px 0; color: #00838f;">Sovereign Media Player</h4>
-            <div id="audio-zone" style="display:none;"><audio id="app-audio-player" controls style="width:100%;"></audio></div>
-            <div id="video-zone" style="display:none;"><video id="app-video-player" controls style="width:100%; border-radius:12px;"></video></div>
-        </div>
-
-        <div class="section-title">Niyo Global Media Hub (Music & Movies)</div>
-        <div class="media-box">
-            <div id="media-container" style="margin-top: 10px;">
-                <p style="font-size: 13px; color: #777;">Scanning content networks...</p>
-            </div>
-        </div>
-
-        <div class="section-title">Open Marketplace</div>
-        <div class="market-box">
-            <div id="products-container" style="margin-top: 10px;">
-                <p style="font-size: 13px; color: #777;">Loading local stores...</p>
-            </div>
-        </div>
-
-        <div class="section-title">Logistics & Hospitality</div>
-        <div class="grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
-            <div class="card" style="background: white; border: 2px solid #f0f2f5; border-radius: 18px; padding: 15px; cursor: pointer; text-align: left;" onclick="wekaHudumaMsetoKwenyeCart('Hotel Room Booking', 0.00035)">
-                <div style="font-weight:bold; font-size:15px;">Hotel Hub</div>
-                <div style="font-size:12px; color:#777;">0.00035 Pi / Night</div>
-            </div>
-            <div class="card" style="background: white; border: 2px solid #f0f2f5; border-radius: 18px; padding: 15px; cursor: pointer; text-align: left;" onclick="wekaHudumaMsetoKwenyeCart('Ride-Hailing Transport', 0.000015)">
-                <div style="font-weight:bold; font-size:15px;">Ride-Hailing</div>
-                <div style="font-size:12px; color:#777;">0.000015 Pi / Trip</div>
-            </div>
-        </div>
-
-        <div class="section-title">Your Smart Cart</div>
-        <div class="cart-box">
-            <ul id="cart-list" style="padding-left: 20px; font-size: 14px; margin: 0 0 12px 0;">
-                <li id="cart-empty">Cart is empty</li>
-            </ul>
-            <p style="font-weight: bold; font-size: 16px; margin: 5px 0; text-align: right;" id="cart-total">Total: 0.00000000 Pi</p>
-        </div>
-
-        <div class="section-title">Creator Hub (Artists & Directors)</div>
-        <div class="card" style="background: #fff6ed; border: 2px solid #ffb74d; border-radius:18px; padding:15px; cursor:pointer; text-align:left; margin-bottom: 15px;" onclick="onyeshaFomuYaWasanii()">
-            <div style="color: #e65100; font-weight:bold; font-size:15px;">Global Content Distribution Portal</div>
-            <div style="color: #ef6c00; font-size:12px;">Music 24h AI Guard Gateway | Movies sell exclusively here after 48 hours verification.</div>
-        </div>
-
-        <div id="fomu-wasanii" class="artist-form">
-            <h4 style="margin: 0 0 12px 0; color: #e65100;">Publish, Protect & Bank Profile</h4>
-            <input type="text" id="a-name" placeholder="Stage Name / Creator Name" required>
-            <select id="a-type">
-                <option value="Audio Track">Audio Track (Music - 24h AI Inspection Gate)</option>
-                <option value="Video File">Video File (Movie / Film - Exclusive 48h Buffer)</option>
-            </select>
-            <input type="text" id="a-title" placeholder="Release Title / Kichwa cha Wimbo" required>
-            <input type="text" id="a-phone" placeholder="Namba yako ya Simu ya Waswasiliano" required>
-            <input type="number" step="any" id="a-price" placeholder="Streaming/Purchase Price (Pi)" required>
-            
-            <label style="font-size: 11px; font-weight: bold; color: #e65100; display:block; margin-top:6px;">Upload Album Cover / Movie Poster (Max 3MB - Bando Lako):</label>
-            <input type="file" id="a-cover-input" accept="image/*" required onchange="chakataCoverBandoLako(this)">
-
-            <label style="font-size: 11px; font-weight: bold; color: #e65100; display:block; margin-top:6px;">Upload Master File (HQ Studio Audio / Full Movie):</label>
-            <input type="file" id="a-file-input" accept="audio/*,video/*" required>
-            
-            <label style="font-size: 12px; font-weight: bold; color: #1565c0; display:block; margin-top:12px;">Akaunti ya Kupokelea Malipo (Inaruhusiwa Kubadilisha Muda Wowote):</label>
-            <select id="a-bank-provider">
-                <option value="M-Pesa">Vodacom M-Pesa</option>
-                <option value="TigoPesa">Tigo Pesa</option>
-                <option value="AirtelMoney">Airtel Money</option>
-                <option value="CRDB Bank">CRDB Bank Plc</option>
-                <option value="NMB Bank">NMB Bank Plc</option>
-                <option value="PiWallet">Pi Network Core Wallet</option>
-            </select>
-            <input type="text" id="a-account-number" placeholder="Weka Namba ya Akaunti / Simu Hapa" required>
-            <button type="button" class="btn-vendor" style="background:#1565c0; margin: 4px 0 12px 0;" id="btn-update-account">Update/Save Payout Account</button>
-
-            <label style="font-size: 12px; font-weight: bold; color: #c62828; display:block; margin-top:10px;">Masharti na Vigezo / Global Rights & Distribution Contract:</label>
-            <div class="terms-scroll-box">
-                1. AI ANTI-COPY SHIELD & SPECTRUM ANALYSIS: Ukipandisha Muziki, Niyo AI itafanya ukaguzi ndani ya masaa 24. Ukipatikana umecopy kazi ya mtu, wimbo hautapanda hadi mmiliki orijino akubali kwa mkono wake kiotomatiki.<br>
-                2. UMILIKAJI WA FILAMU: Msanii unabaki kumiliki filamu yako kwa 100% ndani ya Niyo Revolution, itakaa masaa 48 kabla ya kuwa live ili uikague.<br>
-                3. MAKATO YA MFUMO: Niyo Revolution inakata 5% ya mapato yako mara tu unapofikia kiwango cha kutoa fedha duniani.<br>
-                4. THRESHOLD YA MALIPO: Ili mapato yako yatumwe kwenye akaunti yako (iwe ya muziki au filamu), lazima yafike **Dola Mia Moja ($100 USD)** chini ya hapo yatabaki salama kwenye mfumo wetu.<br>
-                5. MALIPO YA KIOTOMATIKI: Mara tu unapofikisha au kuvuka $100 USD, mfumo utakata 5% and kukutumia 95% ya mapato yako moja kwa moja kwenye akaunti uliyosajili kiotomatiki.
-            </div>
-
-            <div style="margin-top: 10px; display: flex; align-items: flex-start; gap: 8px;">
-                <input type="checkbox" id="a-legal-check" style="width: auto; margin-top: 4px;">
-                <label for="a-legal-check" style="font-size: 11px; color: #333;">Nimeelewa kuwa NIYO AI itakagua wimbo wangu ndani ya masaa 24, na kuzuia nakala isiyo na idhini.</label>
-            </div>
-            <input type="text" id="a-signature" placeholder="Weka Jina Lako Kamili kama Saini ya Kidijitali" required>
-
-            <button class="btn-artist" id="btn-sajili-sanaa" disabled>Publish & Launch Distribution</button>
-        </div>
-
-        <div class="section-title">Merchant Hub</div>
-        <div class="card" style="background: #f2faf3; border: 2px solid #81c784; border-radius:18px; padding:15px; cursor:pointer; text-align:left; margin-bottom: 25px;" onclick="onyeshaFomuYaWauzaji()">
-            <div style="color: #2e7d32; font-weight:bold; font-size:15px;">Vendor Registration Portal</div>
-            <div style="color: #4caf50; font-size:12px;">Sell physical items instantly - 1.5% structural transaction fee.</div>
-        </div>
-
-        <div id="fomu-wauzaji" class="vendor-form">
-            <h4 style="margin: 0 0 12px 0; color: #2e7d32;">Register Store Product</h4>
-            <input type="text" id="v-name" placeholder="Full Name" required>
-            <input type="text" id="v-shop" placeholder="Shop/Brand Name" required>
-            <input type="text" id="v-p-name" placeholder="Product Name" required>
-            <input type="number" step="any" id="v-p-price" placeholder="Price in Pi" required>
-            <input type="text" id="v-wallet" placeholder="Merchant Pi Wallet Address" required>
-            <button class="btn-vendor" id="btn-sajili-bidhaa">Post Item Free</button>
-        </div>
-
-        <button id="btn-lipa" class="btn-main">Authorize System Checkout</button>
+      <button id="btn-lipa" class="btn-main">Authorize System Checkout</button>
     </div>
-
-    <div class="bottom-bar">
-        <div class="bottom-item" onclick="alert('Uko ukurasa wa nyumbani tayari!')">🏠<br>Nyumbani</div>
-        <div class="bottom-item" onclick="onyeshaFomuYaWasanii()">🎵<br>Studio</div>
-        <div class="bottom-item" onclick="onyeshaFomuYaWauzaji()">🛍️<br>Soko</div>
-    </div>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                try {
-                    if (typeof window.Pi !== 'undefined') {
-                        // Kuanzisha Pi SDK kwenye mfumo wa Sandbox ili kuondoa hitilafu ya kufungua nje ya Pi Browser
-                        window.Pi.init({ version: "2.0", sandbox: true });
-                        console.log("Pi SDK initialization completed inside Sandbox successfully.");
-                        
-                        // Kufuta kinguvu ule ujumbe wa onyo au njano uliopo kwenye skrini ya mtumiaji
-                        const piAuthBox = document.getElementById("pi-auth-status");
-                        if (piAuthBox) {
-                            piAuthBox.style.backgroundColor = "#e8f5e9";
-                            piAuthBox.style.color = "#2e7d32";
-                            piAuthBox.innerText = "⚡ Pi Sandbox Activated: Ready for Pi Browser Core Connect";
-                        }
-                    }
-                } catch (error) {
-                    console.error("Initialization error of Pi SDK: ", error);
-                }
-            }, 800);
-        });
-    </script>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, addDoc, initializeFirestore, persistentLocalCache, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+      import {
+        getFirestore,
+        doc,
+        onSnapshot,
+        collection,
+        addDoc,
+        initializeFirestore,
+        persistentLocalCache,
+        updateDoc,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyD84S9Y0cLPcmaArq9KxvCw9p4GbqF-44",
-          authDomain: "niyo-revolution.firebaseapp.com",
-          projectId: "niyo-revolution",
-          storageBucket: "niyo-revolution.firebasestorage.app",
-          messagingSenderId: "1068902936670",
-          appId: "1:1068902936670:web:3c915c3a5077bb6ae084cf",
-          measurementId: "G-S37DG84QP0"
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyD84S9Y0cLPcmaArq9KxvCw9p4GbqF-44",
+        authDomain: "niyo-revolution.firebaseapp.com",
+        projectId: "niyo-revolution",
+        storageBucket: "niyo-revolution.firebasestorage.app",
+        messagingSenderId: "1068902936670",
+        appId: "1:1068902936670:web:3c915c3a5077bb6ae084cf",
+        measurementId: "G-S37DG84QP0",
+      };
 
-        const app = initializeApp(firebaseConfig);
-        const db = initializeFirestore(app, { localCache: persistentLocalCache() });
+      const app = initializeApp(firebaseConfig);
+      const db = initializeFirestore(app, {
+        localCache: persistentLocalCache(),
+      });
 
-        const docRef = doc(db, "BARBERSHOP", "BARBERSHOP");
-        const marketCollectionRef = collection(db, "SOKO_MARKETPLACE");
-        const studioCollectionRef = collection(db, "NIYO_RECORD_LABEL");
+      const docRef = doc(db, "BARBERSHOP", "BARBERSHOP");
+      const marketCollectionRef = collection(db, "SOKO_MARKETPLACE");
+      const studioCollectionRef = collection(db, "NIYO_RECORD_LABEL");
 
-        let dataBarber = {}; let shoppingCart = []; let jumlaKuuPi = 0; let vyenyeMakatoYaNneAsilimia = 0;
-        let simulatedArtistEarningsUSD = parseFloat(localStorage.getItem('niyo_earnings')) || 0.00; 
-        let registeredBankProvider = localStorage.getItem('niyo_provider') || ""; 
-        let registeredBankAccountNumber = localStorage.getItem('niyo_accnum') || "";
-        let base64CoverBando = "";
-        
-        let lastCreatedDocId = ""; let targetedDisputeDocId = "";
-        let counterStreams = 0; let counterDownloads = 0; let counterLikes = 0;
+      let dataBarber = {};
+      let shoppingCart = [];
+      let jumlaKuuPi = 0;
+      let vyenyeMakatoYaNneAsilimia = 0;
+      let simulatedArtistEarningsUSD = 0.0;
+      let registeredBankProvider = "";
+      let registeredBankAccountNumber = "";
 
-        const priceDisplay = document.getElementById("price-display");
-        const hudumaSelect = document.getElementById("huduma-select");
-        const cartList = document.getElementById("cart-list");
-        const cartTotal = document.getElementById("cart-total");
+      let lastCreatedDocId = "";
+      let targetedDisputeDocId = "";
+      let counterStreams = 0;
+      let counterDownloads = 0;
+      let counterLikes = 0;
 
-        const legalCheck = document.getElementById("a-legal-check");
-        const signatureInput = document.getElementById("a-signature");
-        const btnSajiliSanaa = document.getElementById("btn-sajili-sanaa");
+      const priceDisplay = document.getElementById("price-display");
+      const hudumaSelect = document.getElementById("huduma-select");
+      const cartList = document.getElementById("cart-list");
+      const cartTotal = document.getElementById("cart-total");
 
-        const balanceDisplay = document.getElementById("artist-live-balance");
-        const activeAccountDisplay = document.getElementById("active-payout-account");
-        const streamsDOM = document.getElementById("dash-streams");
-        const downloadsDOM = document.getElementById("dash-downloads");
-        const likesDOM = document.getElementById("dash-likes");
-        const smartLinkArea = document.getElementById("smart-link-area");
-        const generatedPromoLink = document.getElementById("generated-promo-link");
-        const smartLinkNote = document.getElementById("smart-link-note");
-        const btnEditBuffer = document.getElementById("btn-edit-buffer");
-        
-        const aiDisputeZone = document.getElementById("ai-dispute-zone");
-        const aiDisputeText = document.getElementById("ai-dispute-text");
-        const dispOwnerPhone = document.getElementById("disp-owner-phone");
-        const dispCopierPhone = document.getElementById("disp-copier-phone");
-        const piAuthStatusBox = document.getElementById("pi-auth-status");
-        const networkStatusBox = document.getElementById("network-status");
+      const legalCheck = document.getElementById("a-legal-check");
+      const signatureInput = document.getElementById("a-signature");
+      const btnSajiliSanaa = document.getElementById("btn-sajili-sanaa");
 
-        // OFFLINE & ONLINE DETECTOR ENGINE
-        window.addEventListener('online', kaguaMtandao);
-        window.addEventListener('offline', kaguaMtandao);
-        function kaguaMtandao() {
-            if(navigator.onLine) {
-                networkStatusBox.innerText = "NIYO AI MONITOR: Anti-Piracy Shield Scanning (ONLINE) 🛡️";
-                networkStatusBox.style.background = "#e3f2fd";
-                networkStatusBox.style.color = "#0d47a1";
-            } else {
-                networkStatusBox.innerText = "NIYO OFFLINE MODE: Huduma Zinaendelea Bila Internet 🔌";
-                networkStatusBox.style.background = "#ffebee";
-                networkStatusBox.style.color = "#c62828";
-            }
+      const balanceDisplay = document.getElementById("artist-live-balance");
+      const activeAccountDisplay = document.getElementById(
+        "active-payout-account"
+      );
+      const streamsDOM = document.getElementById("dash-streams");
+      const downloadsDOM = document.getElementById("dash-downloads");
+      const likesDOM = document.getElementById("dash-likes");
+      const smartLinkArea = document.getElementById("smart-link-area");
+      const generatedPromoLink = document.getElementById(
+        "generated-promo-link"
+      );
+      const smartLinkNote = document.getElementById("smart-link-note");
+      const btnEditBuffer = document.getElementById("btn-edit-buffer");
+
+      const aiDisputeZone = document.getElementById("ai-dispute-zone");
+      const aiDisputeText = document.getElementById("ai-dispute-text");
+      const dispOwnerPhone = document.getElementById("disp-owner-phone");
+      const dispCopierPhone = document.getElementById("disp-copier-phone");
+      const piAuthStatusBox = document.getElementById("pi-auth-status");
+
+      // 2. MIFUMO YA PI SDK - INITIALIZATION NA AUTHENTICATION
+      letauthenticatedPiUser = null;
+
+      try {
+        // Anzisha Pi SDK kwenye mfumo
+        const Pi = window.Pi;
+        Pi.init({ version: "2.0", sandbox: true }); // Weka sandbox: false kama uko tayari kwa uzinduzi rasmi Mainnet
+
+        // Omba idhini ya mtumiaji (Authenticate Pioneer)
+        Pi.authenticate(
+          ["username", "payments"],
+          onPiAuthExtensionApproved
+        ).catch(function (error) {
+          console.error(error);
+          piAuthStatusBox.style.backgroundColor = "#ffebee";
+          piAuthStatusBox.style.color = "#c62828";
+          piAuthStatusBox.innerText =
+            "⚠️ Pi Browser Connection Failed. Fungua ndani ya Pi Browser!";
+        });
+      } catch (e) {
+        piAuthStatusBox.innerText =
+          "🌐 Run Status: Running in External/Web Sandbox Mode.";
+      }
+
+      function onPiAuthExtensionApproved(auth) {
+        authenticatedPiUser = auth.user;
+        piAuthStatusBox.style.backgroundColor = "#e8f5e9";
+        piAuthStatusBox.style.color = "#2e7d32";
+        piAuthStatusBox.innerText = `⚡ Pi Connected: @${auth.user.username} (Mainnet Ready)`;
+      }
+
+      function hifadhiHaliYaKitufe() {
+        if (
+          legalCheck.checked &&
+          signatureInput.value.trim().length > 3 &&
+          registeredBankAccountNumber !== ""
+        ) {
+          btnSajiliSanaa.disabled = false;
+        } else {
+          btnSajiliSanaa.disabled = true;
         }
+      }
+      legalCheck.addEventListener("change", hifadhiHaliYaKitufe);
+      signatureInput.addEventListener("input", hifadhiHaliYaKitufe);
 
-        // FREE ACCOUNT SIGNUP ARCHITECTURE
-        window.tengenezaAkauntiBure = function() {
-            const jina = document.getElementById("free-username").value.trim();
-            const wadhifa = document.getElementById("free-role").value;
-            if(!jina) { alert("Tafadhali weka jina lako kusajili akaunti!"); return; }
-            localStorage.setItem('niyo_user_name', jina);
-            localStorage.setItem('niyo_user_role', wadhifa);
-            document.getElementById("section-auth").style.display = "none";
-            alert(`Akaunti ya Bure ya (${wadhifa}) imefunguliwa kwa jina la ${jina}! ✅`);
-        };
-
-        if(localStorage.getItem('niyo_user_name')) {
-            document.getElementById("section-auth").style.display = "none";
-        }
-
-        let authenticatedPiUser = null;
-
-        // Kuanzisha uthibitisho wa Pi Auth
-        if (typeof window.Pi !== 'undefined') {
-            window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
-              .catch(function(error) {
-                  console.error(error);
-                  if(piAuthStatusBox.innerText.includes("Checking")) {
-                      piAuthStatusBox.style.backgroundColor = "#ffebee";
-                      piAuthStatusBox.style.color = "#c62828";
-                      piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Fungua ndani ya Pi Browser kupata Wallet.";
-                  }
-              });
-        }
-
-        function onPiAuthExtensionApproved(auth) {
-            authenticatedPiUser = auth.user;
-            piAuthStatusBox.style.backgroundColor = "#e8f5e9";
-            piAuthStatusBox.style.color = "#2e7d32";
-            piAuthStatusBox.innerText = `⚡ Pi Connected: @${auth.user.username} (Mainnet Ready)`;
-        }
-
-        function hifadhiHaliYaKitufe() {
-            if (legalCheck.checked && signatureInput.value.trim().length > 3 && registeredBankAccountNumber !== "") {
-                btnSajiliSanaa.disabled = false;
-            } else {
-                btnSajiliSanaa.disabled = true;
-            }
-        }
-        legalCheck.addEventListener("change", hifadhiHaliYaKitufe);
-        signatureInput.addEventListener("input", hifadhiHaliYaKitufe);
-
-        window.chakataCoverBandoLako = function(input) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                base64CoverBando = e.target.result;
-            };
-            if(input.files[0]) reader.readAsDataURL(input.files[0]);
-        };
-
-        document.getElementById("btn-update-account").addEventListener("click", () => {
-            const provider = document.getElementById("a-bank-provider").value;
-            const accNum = document.getElementById("a-account-number").value.trim();
-            if(accNum.length < 5) { alert("Tafadhali weka namba ya akaunti/simu sahihi."); return; }
-            registeredBankProvider = provider; registeredBankAccountNumber = accNum;
-            localStorage.setItem('niyo_provider', provider);
-            localStorage.setItem('niyo_accnum', accNum);
-            activeAccountDisplay.innerText = registeredBankProvider + " (" + registeredBankAccountNumber + ")";
-            alert("🔒 AKAUNTI MPYA IMEWEZESHWA KILOCAL:");
-            hifadhiHaliYaKitufe();
+      document
+        .getElementById("btn-update-account")
+        .addEventListener("click", () => {
+          const provider = document.getElementById("a-bank-provider").value;
+          const accNum = document
+            .getElementById("a-account-number")
+            .value.trim();
+          if (accNum.length < 5) {
+            alert("Tafadhali weka namba ya akaunti/simu sahihi.");
+            return;
+          }
+          registeredBankProvider = provider;
+          registeredBankAccountNumber = accNum;
+          activeAccountDisplay.innerText =
+            registeredBankProvider + " (" + registeredBankAccountNumber + ")";
+          alert(
+            "🔒 AKAUNTI MPYA IMEWEZESHWA: Akaunti ya zamani imefutwa kabisa na haitatumika."
+          );
+          hifadhiHaliYaKitufe();
         });
 
-        if(registeredBankAccountNumber) {
-            activeAccountDisplay.innerText = registeredBankProvider + " (" + registeredBankAccountNumber + ")";
-            balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
+      onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          dataBarber = docSnap.data();
+          onyeshaBeiYaBarber(hudumaSelect.value);
         }
+      });
 
-        onSnapshot(docRef, (docSnap) => { if (docSnap.exists()) { dataBarber = docSnap.data(); onyeshaBeiYaBarber(hudumaSelect.value); } });
-
-        function onyeshaBeiYaBarber(huduma) {
-            if (dataBarber && dataBarber[huduma]) {
-                let b = dataBarber[huduma];
-                if(huduma === "Sucrabu") b = b.replace("Pice:", "Price:");
-                priceDisplay.innerText = b;
-            }
+      function onyeshaBeiYaBarber(huduma) {
+        if (dataBarber && dataBarber[huduma]) {
+          let b = dataBarber[huduma];
+          if (huduma === "Sucrabu") b = b.replace("Pice:", "Price:");
+          priceDisplay.innerText = b;
         }
-        hudumaSelect.addEventListener("change", (e) => onyeshaBeiYaBarber(e.target.value));
+      }
+      hudumaSelect.addEventListener("change", (e) =>
+        onyeshaBeiYaBarber(e.target.value)
+      );
 
-        onSnapshot(marketCollectionRef, (querySnapshot) => {
-            const container = document.getElementById("products-container"); container.innerHTML = "";
-            if (querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px;color:#999;'>No active products found.</p>"; return; }
-            querySnapshot.forEach((doc) => {
-                const item = doc.data();
-                const itemDiv = document.createElement("div");
-                itemDiv.style = "background:white; padding:12px; border-radius:12px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; border:1px solid #e1e4f5; font-size:13px;";
-                itemDiv.innerHTML = `<div><strong>${item.bidhaa}</strong> (${item.duka})<br><span style="color:#2e7d32;font-weight:bold;">${parseFloat(item.bei).toFixed(6)} Pi</span></div>`;
-                const btn = document.createElement("button"); btn.innerText = "+"; btn.style = "background:#6200ee; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;";
-                btn.onclick = () => wekaKwenyeCart(item.bidhaa, parseFloat(item.bei), 'vendor', '', '', '');
-                itemDiv.appendChild(btn); container.appendChild(itemDiv);
-            });
+      // Marketplace sync
+      onSnapshot(marketCollectionRef, (querySnapshot) => {
+        const container = document.getElementById("products-container");
+        container.innerHTML = "";
+        if (querySnapshot.empty) {
+          container.innerHTML =
+            "<p style='font-size:12px;color:#999;'>No active products found.</p>";
+          return;
+        }
+        querySnapshot.forEach((doc) => {
+          const item = doc.data();
+          const itemDiv = document.createElement("div");
+          itemDiv.style =
+            "background:white; padding:12px; border-radius:12px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; border:1px solid #e1e4f5; font-size:13px;";
+          itemDiv.innerHTML = `<div><strong>${item.bidhaa}</strong> (${
+            item.duka
+          })<br><span style="color:#2e7d32;font-weight:bold;">${parseFloat(
+            item.bei
+          ).toFixed(6)} Pi</span></div>`;
+          const btn = document.createElement("button");
+          btn.innerText = "+";
+          btn.style =
+            "background:#6200ee; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;";
+          btn.onclick = () =>
+            wekaKwenyeCart(
+              item.bidhaa,
+              parseFloat(item.bei),
+              "vendor",
+              "",
+              "",
+              ""
+            );
+          itemDiv.appendChild(btn);
+          container.appendChild(itemDiv);
         });
+      });
 
-        onSnapshot(studioCollectionRef, (querySnapshot) => {
-            const container = document.getElementById("media-container"); container.innerHTML = "";
-            if (querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px;color:#999;'>No digital media items found.</p>"; return; }
-            const sasaivi = new Date().getTime();
-            querySnapshot.forEach((documentSnap) => {
-                const m = documentSnap.data();
-                let isMusic = m.aina.includes("Audio");
-                if (m.isCopy === true && m.aiApprovedByOwner !== true) { return; }
-                let mudaWaKupandisha = m.tareheKipimo || sasaivi;
-                let masaaYaliyopita = (sasaivi - mudaWaKupandisha) / (1000 * 60 * 60);
-                if (!isMusic && masaaYaliyopita < 48) { return; }
+      // Global Media Store
+      onSnapshot(studioCollectionRef, (querySnapshot) => {
+        const container = document.getElementById("media-container");
+        container.innerHTML = "";
+        if (querySnapshot.empty) {
+          container.innerHTML =
+            "<p style='font-size:12px;color:#999;'>No digital media items found.</p>";
+          return;
+        }
+        const sasaivi = new Date().getTime();
+        querySnapshot.forEach((documentSnap) => {
+          const m = documentSnap.data();
+          let isMusic = m.aina.includes("Audio");
+          if (m.isCopy === true && m.aiApprovedByOwner !== true) {
+            return;
+          }
+          let mudaWaKupandisha = m.tareheKipimo || sasaivi;
+          let masaaYaliyopita = (sasaivi - mudaWaKupandisha) / (1000 * 60 * 60);
+          if (!isMusic && masaaYaliyopita < 48) {
+            return;
+          }
 
-                const mediaDiv = document.createElement("div"); mediaDiv.className = "media-item";
-                let routingTag = isMusic ? `<span style="font-size:10px; color:#1565c0; font-weight:bold;">[Global Sync]</span>` : `<span style="font-size:10px; color:#2e7d32; font-weight:bold;">[Niyo Exclusive Cinema]</span>`;
-                mediaDiv.innerHTML = `
-                    <img src="${m.coverLink || base64CoverBando || 'https://via.placeholder.com/150'}" class="media-cover">
+          const mediaDiv = document.createElement("div");
+          mediaDiv.className = "media-item";
+          let routingTag = isMusic
+            ? `<span style="font-size:10px; color:#1565c0; font-weight:bold;">[Global Sync]</span>`
+            : `<span style="font-size:10px; color:#2e7d32; font-weight:bold;">[Niyo Exclusive Cinema]</span>`;
+          mediaDiv.innerHTML = `
+                    <img src="${
+                      m.coverLink || "https://via.placeholder.com/150"
+                    }" class="media-cover">
                     <div class="media-info">
                         <strong>${m.kichwa}</strong> ${routingTag}<br>
-                        <span style="font-size:10px; color:#666;">By: ${m.msanii} | Code: ${m.isrcCode}</span><br>
-                        <span style="color:#2e7d32;font-weight:bold;">${parseFloat(m.bei).toFixed(6)} Pi</span>
+                        <span style="font-size:10px; color:#666;">By: ${
+                          m.msanii
+                        } | Code: ${m.isrcCode}</span><br>
+                        <span style="color:#2e7d32;font-weight:bold;">${parseFloat(
+                          m.bei
+                        ).toFixed(6)} Pi</span>
                     </div>
                 `;
-                const actionGroup = document.createElement("div");
-                const btnSelect = document.createElement("button"); btnSelect.innerText = isMusic ? "Stream" : "Watch"; btnSelect.className = "btn-action"; btnSelect.style.backgroundColor = "#e65100";
-                btnSelect.onclick = () => {
-                    counterStreams += 1; streamsDOM.innerText = counterStreams;
-                    wekaKwenyeCart(`${m.aina}: ${m.kichwa}`, parseFloat(m.bei), 'artist', m.failiLink, m.aina, m.bei);
-                };
-                const btnDownload = document.createElement("button"); btnDownload.innerText = "Download"; btnDownload.className = "btn-action"; btnDownload.style.backgroundColor = "#0097a7";
-                btnDownload.onclick = () => {
-                    counterDownloads += 1; downloadsDOM.innerText = counterDownloads;
-                    textBandoDownload(m.kichwa, parseFloat(m.bandoMB || 15), m.failiLink);
-                };
-                const btnLike = document.createElement("button"); btnLike.innerText = "❤️"; btnLike.className = "btn-action"; btnLike.style.backgroundColor = "#d81b60";
-                btnLike.onclick = () => { counterLikes += 1; likesDOM.innerText = counterLikes; alert("❤️ Feedback imetumwa."); };
-                actionGroup.appendChild(btnSelect); actionGroup.appendChild(btnDownload); actionGroup.appendChild(btnLike);
-                mediaDiv.appendChild(actionGroup); container.appendChild(mediaDiv);
-            });
+          const actionGroup = document.createElement("div");
+          const btnSelect = document.createElement("button");
+          btnSelect.innerText = isMusic ? "Stream" : "Watch";
+          btnSelect.className = "btn-action";
+          btnSelect.style.backgroundColor = "#e65100";
+          btnSelect.onclick = () => {
+            counterStreams += 1;
+            streamsDOM.innerText = counterStreams;
+            wekaKwenyeCart(
+              `${m.aina}: ${m.kichwa}`,
+              parseFloat(m.bei),
+              "artist",
+              m.failiLink,
+              m.aina,
+              m.bei
+            );
+          };
+          const btnDownload = document.createElement("button");
+          btnDownload.innerText = "Download";
+          btnDownload.className = "btn-action";
+          btnDownload.style.backgroundColor = "#0097a7";
+          btnDownload.onclick = () => {
+            counterDownloads += 1;
+            downloadsDOM.innerText = counterDownloads;
+            chalishaBandoDownload(
+              m.kichwa,
+              parseFloat(m.bandoMB || 15),
+              m.failiLink
+            );
+          };
+          const btnLike = document.createElement("button");
+          btnLike.innerText = "❤️";
+          btnLike.className = "btn-action";
+          btnLike.style.backgroundColor = "#d81b60";
+          btnLike.onclick = () => {
+            counterLikes += 1;
+            likesDOM.innerText = counterLikes;
+            alert("❤️ Feedback imetumwa.");
+          };
+          actionGroup.appendChild(btnSelect);
+          actionGroup.appendChild(btnDownload);
+          actionGroup.appendChild(btnLike);
+          mediaDiv.appendChild(actionGroup);
+          container.appendChild(mediaDiv);
+        });
+      });
+
+      function wekaKwenyeCart(
+        jina,
+        bei,
+        ainaYaBidhaa,
+        fileLink,
+        mfumoAina,
+        asiliBei
+      ) {
+        shoppingCart.push({
+          jina,
+          bei,
+          ainaYaBidhaa,
+          fileLink,
+          mfumoAina,
+          asiliBei,
+        });
+        updateCartUI();
+      }
+
+      document
+        .getElementById("btn-add-barber-cart")
+        .addEventListener("click", () => {
+          let ntxt = priceDisplay.innerText.replace(/[^\d.]/g, "");
+          let bei = parseFloat(ntxt);
+          if (!isNaN(bei)) {
+            wekaKwenyeCart(
+              "Barber: " + hudumaSelect.value,
+              bei,
+              "barber",
+              "",
+              "",
+              ""
+            );
+          }
         });
 
-        function wekaKwenyeCart(jina, bei, ainaYaBidhaa, fileLink, mfumoAina, asiliBei) {
-            shoppingCart.push({ jina, bei, ainaYaBidhaa, fileLink, mfumoAina, asiliBei });
-            updateCartUI();
+      window.wekaHudumaMsetoKwenyeCart = function (jina, bei) {
+        wekaKwenyeCart(jina, bei, "mseto", "", "", "");
+      };
+
+      function updateCartUI() {
+        cartList.innerHTML = "";
+        if (shoppingCart.length === 0) {
+          cartList.innerHTML = "<li>Cart is empty</li>";
+          cartTotal.innerText = "Total: 0.00000000 Pi";
+          jumlaKuuPi = 0;
+          vyenyeMakatoYaNneAsilimia = 0;
+          return;
         }
-
-        document.getElementById("btn-add-barber-cart").addEventListener("click", () => {
-            let ntxt = priceDisplay.innerText.replace(/[^\d.]/g, ""); let bei = parseFloat(ntxt);
-            if(!isNaN(bei)) { wekaKwenyeCart("Barber: " + hudumaSelect.value, bei, 'barber', '', '', ''); }
+        jumlaKuuPi = 0;
+        vyenyeMakatoYaNneAsilimia = 0;
+        shoppingCart.forEach((item) => {
+          const li = document.createElement("li");
+          li.innerText = `${item.jina} - ${item.bei.toFixed(8)} Pi`;
+          cartList.appendChild(li);
+          jumlaKuuPi += item.bei;
+          if (item.ainaYaBidhaa === "artist") {
+            vyenyeMakatoYaNneAsilimia += item.bei;
+          }
         });
+        cartTotal.innerText = "Total: " + jumlaKuuPi.toFixed(8) + " Pi";
+      }
 
-        window.wekaHudumaMsetoKwenyeCart = function(jina, bei) { wekaKwenyeCart(jina, bei, 'mseto', '', '', ''); };
-
-        function updateCartUI() {
-            cartList.innerHTML = ""; if(shoppingCart.length === 0) { cartList.innerHTML = "<li>Cart is empty</li>"; cartTotal.innerText = "Total: 0.00000000 Pi"; jumlaKuuPi = 0; vyenyeMakatoYaNneAsilimia = 0; return; }
-            jumlaKuuPi = 0; vyenyeMakatoYaNneAsilimia = 0;
-            shoppingCart.forEach((item) => {
-                const li = document.createElement("li"); li.innerText = `${item.jina} - ${item.bei.toFixed(8)} Pi`; cartList.appendChild(li);
-                jumlaKuuPi += item.bei; if(item.ainaYaBidhaa === 'artist') { vyenyeMakatoYaNneAsilimia += item.bei; }
-            });
-            cartTotal.innerText = "Total: " + jumlaKuuPi.toFixed(8) + " Pi";
+      window.chalishaBandoDownload = function (kichwa, mbSize, fileLink) {
+        let dataTariffCost = mbSize * 0.0000003;
+        let confirmDl = confirm(
+          "--- DATA TARIFF DISPATCH ---\n\nCost: " +
+            dataTariffCost.toFixed(8) +
+            " Pi\n\nAuthorize link decryption?"
+        );
+        if (confirmDl) {
+          if (fileLink) {
+            window.open(fileLink, "_blank");
+          }
         }
+      };
 
-        window.textBandoDownload = function(kichwa, mbSize, fileLink) {
-            let dataTariffCost = mbSize * 0.0000003; 
-            let confirmDl = confirm("--- DATA TARIFF DISPATCH ---\n\nCost: " + dataTariffCost.toFixed(8) + " Pi\n\nAuthorize link decryption using mobile bando?");
-            if(confirmDl) { if(fileLink) { window.open(fileLink, '_blank'); } }
-        };
+      window.onyeshaFomuYaWauzaji = function () {
+        const f = document.getElementById("fomu-wauzaji");
+        f.style.display = f.style.display === "block" ? "none" : "block";
+        document.getElementById("fomu-wasanii").style.display = "none";
+      };
+      window.onyeshaFomuYaWasanii = function () {
+        const f = document.getElementById("fomu-wasanii");
+        f.style.display = f.style.display === "block" ? "none" : "block";
+        document.getElementById("fomu-wauzaji").style.display = "none";
+      };
 
-        window.onyeshaFomuYaWauzaji = function() {
-            const f = document.getElementById("fomu-wauzaji"); f.style.display = f.style.display === "block" ? "none" : "block"; document.getElementById("fomu-wasanii").style.display = "none";
-        };
-        window.onyeshaFomuYaWasanii = function() {
-            const f = document.getElementById("fomu-wasanii"); f.style.display = f.style.display === "block" ? "none" : "block"; document.getElementById("fomu-wauzaji").style.display = "none";
-        };
-
-        document.getElementById("btn-sajili-bidhaa").addEventListener("click", async () => {
-            const jina = document.getElementById("v-name").value; const duka = document.getElementById("v-shop").value;
-            const bidhaa = document.getElementById("v-p-name").value; const bei = parseFloat(document.getElementById("v-p-price").value);
-            const wallet = document.getElementById("v-wallet").value;
-            if(!jina || !duka || !bidhaa || isNaN(bei) || !wallet) { alert("Kamilisha fomu."); return; }
-            try { await addDoc(marketCollectionRef, { muuzaji: jina, duka: duka, bidhaa: bidhaa, bei: bei, pochi: wallet, tarehe: new Date() }); document.getElementById("fomu-wauzaji").style.display = "none"; } catch (e) {}
+      document
+        .getElementById("btn-sajili-bidhaa")
+        .addEventListener("click", async () => {
+          const jina = document.getElementById("v-name").value;
+          const duka = document.getElementById("v-shop").value;
+          const bidhaa = document.getElementById("v-p-name").value;
+          const bei = parseFloat(document.getElementById("v-p-price").value);
+          const wallet = document.getElementById("v-wallet").value;
+          if (!jina || !duka || !bidhaa || isNaN(bei) || !wallet) {
+            alert("Complete fields.");
+            return;
+          }
+          try {
+            await addDoc(marketCollectionRef, {
+              muuzaji: jina,
+              duka: duka,
+              bidhaa: bidhaa,
+              bei: bei,
+              pochi: wallet,
+              tarehe: new Date(),
+            });
+            document.getElementById("fomu-wauzaji").style.display = "none";
+          } catch (e) {}
         });
 
-        document.getElementById("btn-sajili-sanaa").addEventListener("click", async () => {
-            const msanii = document.getElementById("a-name").value.trim(); const aina = document.getElementById("a-type").value;
-            const kichwa = document.getElementById("a-title").value.trim(); const bei = parseFloat(document.getElementById("a-price").value);
-            const nambaSimu = document.getElementById("a-phone").value.trim();
-            const fileInput = document.getElementById("a-file-input").files[0];
-            const sainiJina = signatureInput.value.trim();
+      // CREATOR HUB PUBLISHING ENGINE
+      document
+        .getElementById("btn-sajili-sanaa")
+        .addEventListener("click", async () => {
+          const msanii = document.getElementById("a-name").value.trim();
+          const aina = document.getElementById("a-type").value;
+          const kichwa = document.getElementById("a-title").value.trim();
+          const bei = parseFloat(document.getElementById("a-price").value);
+          const nambaSimu = document.getElementById("a-phone").value.trim();
+          const coverInput = document.getElementById("a-cover-input").files[0];
+          const fileInput = document.getElementById("a-file-input").files[0];
+          const sainiJina = signatureInput.value.trim();
 
-            if(!msanii || !kichwa || !nambaSimu || isNaN(bei) || !fileInput || !registeredBankAccountNumber) { alert("Kamilisha fomu."); return; }
-            const kizaziNamba = "TZ-NYO-" + Math.floor(100000 + Math.random() * 900000) + "-26";
-            const simulatedCoverUrl = base64CoverBando || "https://via.placeholder.com/150";
-            const simulatedMasterUrl = URL.createObjectURL(fileInput);
-            let isMusic = aina.includes("Audio"); let allocatedMB = isMusic ? 15 : 450;
-            let generatedUniversalLink = isMusic ? "https://niyo.revo.link/track/" + kizaziNamba : "https://niyo.revo.link/cinema/" + kizaziNamba;
+          if (
+            !msanii ||
+            !kichwa ||
+            !nambaSimu ||
+            isNaN(bei) ||
+            !coverInput ||
+            !fileInput ||
+            !registeredBankAccountNumber
+          ) {
+            alert("Kamilisha fomu.");
+            return;
+          }
+          const kizaziNamba =
+            "TZ-NYO-" + Math.floor(100000 + Math.random() * 900000) + "-26";
+          const simulatedCoverUrl = URL.createObjectURL(coverInput);
+          const simulatedMasterUrl = URL.createObjectURL(fileInput);
+          let isMusic = aina.includes("Audio");
+          let allocatedMB = isMusic ? 15 : 450;
+          let generatedUniversalLink = isMusic
+            ? "https://niyo.revo.link/track/" + kizaziNamba
+            : "https://niyo.revo.link/cinema/" + kizaziNamba;
 
-            if(isMusic) {
-                const q = query(studioCollectionRef, where("kichwa", "==", kichwa)); const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-                    let dataYaMmilikiOrijino = {}; let idYaMmilikiOrijino = "";
-                    querySnapshot.forEach((doc) => { dataYaMmilikiOrijino = doc.data(); idYaMmilikiOrijino = doc.id; });
-                    alert("🛑 NIYO AI ALERTER (ANTI-PIRACY): Wimbo UMEZUIWA. Taarifa imetumwa kwa mmiliki.");
-                    const sasaTimestamp = new Date().getTime();
-                    const nyoDoc = await addDoc(studioCollectionRef, {
-                        msanii: msanii, aina: aina, kichwa: kichwa, bei: bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, universalPromoLink: generatedUniversalLink, saini: sainiJina, isCopy: true, aiApprovedByOwner: false, originalOwnerId: idYaMmilikiOrijino, tareheKipimo: sasaTimestamp, tarehe: new Date()
-                    });
-                    targetedDisputeDocId = nyoDoc.id; aiDisputeZone.style.display = "block";
-                    aiDisputeText.innerText = `Msanii "${msanii}" amepandisha wimbo unaoitwa "${kichwa}". AI yetu imegundua ni COPY.`;
-                    dispOwnerPhone.innerText = dataYaMmilikiOrijino.simu || "0712XXXXXX"; dispCopierPhone.innerText = nambaSimu;
-                    document.getElementById("fomu-wasanii").style.display = "none"; return;
-                }
+          if (isMusic) {
+            const q = query(studioCollectionRef, where("kichwa", "==", kichwa));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+              let dataYaMmilikiOrijino = {};
+              let idYaMmilikiOrijino = "";
+              querySnapshot.forEach((doc) => {
+                dataYaMmilikiOrijino = doc.data();
+                idYaMmilikiOrijino = doc.id;
+              });
+              alert(
+                "🛑 NIYO AI ALERTER (ANTI-PIRACY): Wimbo UMEZUIWA. Taarifa imetumwa kwa mmiliki."
+              );
+              const sasaTimestamp = new Date().getTime();
+              const nyoDoc = await addDoc(studioCollectionRef, {
+                msanii: msanii,
+                aina: aina,
+                kichwa: kichwa,
+                bei: bei,
+                simu: nambaSimu,
+                coverLink: simulatedCoverUrl,
+                failiLink: simulatedMasterUrl,
+                bandoMB: allocatedMB,
+                bankProvider: registeredBankProvider,
+                accountNumber: registeredBankAccountNumber,
+                isrcCode: kizaziNamba,
+                universalPromoLink: generatedUniversalLink,
+                saini: sainiJina,
+                isCopy: true,
+                aiApprovedByOwner: false,
+                originalOwnerId: idYaMmilikiOrijino,
+                tareheKipimo: sasaTimestamp,
+                tarehe: new Date(),
+              });
+              targetedDisputeDocId = nyoDoc.id;
+              aiDisputeZone.style.display = "block";
+              aiDisputeText.innerText = `Msanii "${msanii}" amepandisha wimbo unaoitwa "${kichwa}". AI yetu imegundua ni COPY.`;
+              dispOwnerPhone.innerText =
+                dataYaMmilikiOrijino.simu || "0712XXXXXX";
+              dispCopierPhone.innerText = nambaSimu;
+              document.getElementById("fomu-wasanii").style.display = "none";
+              return;
             }
+          }
 
-            try {
-                const sasaTimestamp = new Date().getTime();
-                const nyoDoc = await addDoc(studioCollectionRef,
+          try {
+            const sasaTimestamp = new Date().getTime();
+            const nyoDoc = await addDoc(studioCollectionRef, {
+              msanii: msanii,
+              aina: aina,
+              kichwa: kichwa,
+              bei: bei,
+              simu: nambaSimu,
+              coverLink: simulatedCoverUrl,
+              failiLink: simulatedMasterUrl,
+              bandoMB: allocatedMB,
+              bankProvider: registeredBankProvider,
+              accountNumber: registeredBankAccountNumber,
+              isrcCode: kizaziNamba,
+              universalPromoLink: generatedUniversalLink,
+              saini: sainiJina,
+              isCopy: false,
+              aiApprovedByOwner: true,
+              tareheKipimo: sasaTimestamp,
+              tarehe: new Date(),
+            });
+            lastCreatedDocId = nyoDoc.id;
+            smartLinkArea.style.display = "block";
+            generatedPromoLink.value = generatedUniversalLink;
+            if (isMusic) {
+              btnEditBuffer.style.display = "none";
+              smartLinkNote.innerText =
+                "ℹ️ Kazi imekamilisha ukaguzi wa masaa 24 na AI!";
+            } else {
+              btnEditBuffer.style.display = "block";
+              smartLinkNote.innerText = "⏳ FILAMU IPO BUFFER (MASAA 48).";
+            }
+            document.getElementById("fomu-wasanii").style.display = "none";
+            legalCheck.checked = false;
+            signatureInput.value = "";
+            btnSajiliSanaa.disabled = true;
+          } catch (e) {}
+        });
+
+      window.mmilikiAruhusuWimboUshushweKiotomatiki = async function () {
+        if (!targetedDisputeDocId) return;
+        try {
+          const badiliRef = doc(db, "NIYO_RECORD_LABEL", targetedDisputeDocId);
+          await updateDoc(badiliRef, { aiApprovedByOwner: true });
+          alert("🚀 Wimbo wa nakala umefunguliwa na umepanda Live!");
+          aiDisputeZone.style.display = "none";
+          targetedDisputeDocId = "";
+        } catch (e) {}
+      };
+
+      window.rekebishaFilamuMasaa48 = async function () {
+        if (!lastCreatedDocId) return;
+        let kichwaKipya = prompt("Ingiza Kichwa Kipya:");
+        let beiMpya = prompt("Ingiza Bei Mpya (Pi):");
+        if (!kichwaKipya || isNaN(parseFloat(beiMpya))) return;
+        try {
+          const badiliRef = doc(db, "NIYO_RECORD_LABEL", lastCreatedDocId);
+          await updateDoc(badiliRef, {
+            kichwa: kichwaKipya,
+            bei: parseFloat(beiMpya),
+          });
+          alert("⚙️ Data imesasishwa!");
+        } catch (e) {}
+      };
+
+      // 3. HARDWARE BLOCK: AUTHENTIC PI PAYMENT FLOW ON CHECKOUT
+      document.getElementById("btn-lipa").addEventListener("click", () => {
+        if (shoppingCart.length === 0) {
+          alert("Cart empty.");
+          return;
+        }
+
+        // Kama haiko ndani ya Pi Browser au SDK haijajiload bado
+        if (!window.Pi || !authenticatedPiUser) {
+          alert(
+            "🔴 CHEKOUT IMESITISHWA:\nIli kukamilisha malipo halisi ya Pi Coins, lazima ufungue App hii ndani ya Pi Browser ukiwa umelog-in."
+          );
+          return;
+        }
+
+        // Hesabu kiasi kamili cha Pi kinachotakiwa kulipwa
+        let kiasiChaPi = parseFloat(jumlaKuuPi.toFixed(7));
+
+        // Mapato ya Makato
+        let vyenyeMakatoYaSoko = 0;
+        let paidArtistItems = [];
+        shoppingCart.forEach((item) => {
+          if (item.ainaYaBidhaa === "artist") {
+            paidArtistItems.push(item);
+          } else {
+            vyenyeMakatoYaSoko += item.bei;
+          }
+        });
+        let faidaSokoLako = vyenyeMakatoYaSoko * 0.015;
+        let faidaWasaniiLako = vyenyeMakatoYaNneAsilimia * 0.04;
+
+        // Alika Dirisha la Pi Wallet Checkout (Pi Blockchain Transfer Invitation)
+        window.Pi.createPayment(
+          {
+            amount: kiasiChaPi,
+            memo: `Niyo Revolution Checkout - Purchase Summary`,
+            metadata: { cartItemsCount: shoppingCart.length },
+          },
+          {
+            onReadyForServerApproval: function (paymentId) {
+              console.log("Payment Created ID:", paymentId);
+              // Hapa Pi Core Team inasubiri App yako ya Node.js/Firebase functions ithibitishe kwenye server upande wa nyuma
+              alert("⏳ Pi Server Inahakiki Muamala wako... Usifunge Dirisha.");
+            },
+            onReadyForServerCompletion: function (paymentId, txid) {
+              console.log("Txid Generated:", txid);
+              // Pesa imetoka kwa mtumiaji kwenda kwenye pochi yako ya Niyo Revolution ya developer
+
+              if (paidArtistItems.length > 0) {
+                simulatedArtistEarningsUSD += 65.0;
+                balanceDisplay.innerText =
+                  "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
+              }
+
+              alert(
+                `✅ PI BLOCKCHAIN CONFIRMED ✅\n\nMuamala Umefanikiwa!\nTxID: ${txid}\nKiasi: ${kiasiChaPi} Pi kimetumwa.`
+              );
+
+              // AUTOMATED BANK PAYOUT ENGINE AT $100 THRESHOLD
+              if (simulatedArtistEarningsUSD >= 100.0) {
+                let makatoYaNiyo = simulatedArtistEarningsUSD * 0.04;
+                let kiasiChaMsanii = simulatedArtistEarningsUSD - makatoYaNiyo;
+                alert(
+                  "💰 AUTOMATED PAYOUT COMPLETE 💰\n\nImeenda: " +
+                    registeredBankProvider +
+                    " [" +
+                    registeredBankAccountNumber +
+                    "]\nKiasi: $" +
+                    kiasiChaMsanii.toFixed(2) +
+                    " USD"
+                );
+                simulatedArtistEarningsUSD = 0.0;
+                balanceDisplay.innerText = "$0.00 USD";
+              }
+
+              // Play file end zone
+              if (paidArtistItems.length > 0) {
+                const kwanza = paidArtistItems[0];
+                const playerBox = document.getElementById("media-player-box");
+                const azone = document.getElementById("audio-zone");
+                const vzone = document.getElementById("video-zone");
+                playerBox.style.display = "block";
+                document.getElementById("player-title").innerText =
+                  "Streaming: " + kwanza.jina;
+                if (kwanza.mfumoAina.includes("Audio")) {
+                  vzone.style.display = "none";
+                  azone.style.display = "block";
+                  const aud = document.getElementById("app-audio-player");
+                  aud.src = kwanza.fileLink;
+                  aud.play();
+                } else {
+                  azone.style.display = "none";
+                  vzone.style.display = "block";
+                  const vid = document.getElementById("app-video-player");
+                  vid.src = kwanza.fileLink;
+                  vid.play();
+                }
+              }
+
+              shoppingCart = [];
+              updateCartUI();
+            },
+            onCancel: function (paymentId) {
+              alert("❌ Mtumiaji amesitisha malipo ya Pi Wallet.");
+            },
+            onError: function (error, paymentId) {
+              alert("🚨 Hitilafu ya Pi Blockchain imetokea.");
+            },
+          }
+        );
+      });
+    </script>
+  </body>
+</html>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script>
+  Pi.init({ version: "2.0" });
+</script>
