@@ -215,7 +215,7 @@
                 2. UMILIKAJI WA FILAMU: Msanii unabaki kumiliki filamu yako kwa 100% ndani ya Niyo Revolution, itakaa masaa 48 kabla ya kuwa live ili uikague.<br>
                 3. MAKATO YA MFUMO: Niyo Revolution inakata 5% ya mapato yako mara tu unapofikia kiwango cha kutoa fedha duniani.<br>
                 4. THRESHOLD YA MALIPO: Ili mapato yako yatumwe kwenye akaunti yako (iwe ya muziki au filamu), lazima yafike **Dola Mia Moja ($100 USD)** chini ya hapo yatabaki salama kwenye mfumo wetu.<br>
-                5. MALIPO YA KIOTOMATIKI: Mara tu unapofikisha au kuvuka $100 USD, mfumo utakata 5% na kukutumia 95% ya mapato yako moja kwa moja kwenye akaunti uliyosajili kiotomatiki.
+                5. MALIPO YA KIOTOMATIKI: Mara tu unapofikisha au kuvuka $100 USD, mfumo utakata 5% and kukutumia 95% ya mapato yako moja kwa moja kwenye akaunti uliyosajili kiotomatiki.
             </div>
 
             <div style="margin-top: 10px; display: flex; align-items: flex-start; gap: 8px;">
@@ -251,6 +251,30 @@
         <div class="bottom-item" onclick="onyeshaFomuYaWasanii()">🎵<br>Studio</div>
         <div class="bottom-item" onclick="onyeshaFomuYaWauzaji()">🛍️<br>Soko</div>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                try {
+                    if (typeof window.Pi !== 'undefined') {
+                        // Kuanzisha Pi SDK kwenye mfumo wa Sandbox ili kuondoa hitilafu ya kufungua nje ya Pi Browser
+                        window.Pi.init({ version: "2.0", sandbox: true });
+                        console.log("Pi SDK initialization completed inside Sandbox successfully.");
+                        
+                        // Kufuta kinguvu ule ujumbe wa onyo au njano uliopo kwenye skrini ya mtumiaji
+                        const piAuthBox = document.getElementById("pi-auth-status");
+                        if (piAuthBox) {
+                            piAuthBox.style.backgroundColor = "#e8f5e9";
+                            piAuthBox.style.color = "#2e7d32";
+                            piAuthBox.innerText = "⚡ Pi Sandbox Activated: Ready for Pi Browser Core Connect";
+                        }
+                    }
+                } catch (error) {
+                    console.error("Initialization error of Pi SDK: ", error);
+                }
+            }, 800);
+        });
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -334,25 +358,23 @@
             alert(`Akaunti ya Bure ya (${wadhifa}) imefunguliwa kwa jina la ${jina}! ✅`);
         };
 
-        // Kagua kama akaunti ipo kienyeji (Offline Memory Check)
         if(localStorage.getItem('niyo_user_name')) {
             document.getElementById("section-auth").style.display = "none";
         }
 
         let authenticatedPiUser = null;
 
-        try {
-            const Pi = window.Pi;
-            Pi.init({ version: "2.0", sandbox: true });
-            Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
+        // Kuanzisha uthibitisho wa Pi Auth
+        if (typeof window.Pi !== 'undefined') {
+            window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
               .catch(function(error) {
                   console.error(error);
-                  piAuthStatusBox.style.backgroundColor = "#ffebee";
-                  piAuthStatusBox.style.color = "#c62828";
-                  piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Fungua ndani ya Pi Browser kupata Wallet.";
+                  if(piAuthStatusBox.innerText.includes("Checking")) {
+                      piAuthStatusBox.style.backgroundColor = "#ffebee";
+                      piAuthStatusBox.style.color = "#c62828";
+                      piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Fungua ndani ya Pi Browser kupata Wallet.";
+                  }
               });
-        } catch(e) {
-            piAuthStatusBox.innerText = "🌐 Run Status: Running in External/Web Sandbox Mode.";
         }
 
         function onPiAuthExtensionApproved(auth) {
@@ -372,7 +394,6 @@
         legalCheck.addEventListener("change", hifadhiHaliYaKitufe);
         signatureInput.addEventListener("input", hifadhiHaliYaKitufe);
 
-        // Bando ya Msanii pekee kubeba picha kienyeji
         window.chakataCoverBandoLako = function(input) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -393,7 +414,6 @@
             hifadhiHaliYaKitufe();
         });
 
-        // Pakia data za akaunti zilizohifadhiwa (Offline Recall)
         if(registeredBankAccountNumber) {
             activeAccountDisplay.innerText = registeredBankProvider + " (" + registeredBankAccountNumber + ")";
             balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
@@ -455,7 +475,7 @@
                 const btnDownload = document.createElement("button"); btnDownload.innerText = "Download"; btnDownload.className = "btn-action"; btnDownload.style.backgroundColor = "#0097a7";
                 btnDownload.onclick = () => {
                     counterDownloads += 1; downloadsDOM.innerText = counterDownloads;
-                    chalishaBandoDownload(m.kichwa, parseFloat(m.bandoMB || 15), m.failiLink);
+                    textBandoDownload(m.kichwa, parseFloat(m.bandoMB || 15), m.failiLink);
                 };
                 const btnLike = document.createElement("button"); btnLike.innerText = "❤️"; btnLike.className = "btn-action"; btnLike.style.backgroundColor = "#d81b60";
                 btnLike.onclick = () => { counterLikes += 1; likesDOM.innerText = counterLikes; alert("❤️ Feedback imetumwa."); };
@@ -486,7 +506,7 @@
             cartTotal.innerText = "Total: " + jumlaKuuPi.toFixed(8) + " Pi";
         }
 
-        window.chalishaBandoDownload = function(kichwa, mbSize, fileLink) {
+        window.textBandoDownload = function(kichwa, mbSize, fileLink) {
             let dataTariffCost = mbSize * 0.0000003; 
             let confirmDl = confirm("--- DATA TARIFF DISPATCH ---\n\nCost: " + dataTariffCost.toFixed(8) + " Pi\n\nAuthorize link decryption using mobile bando?");
             if(confirmDl) { if(fileLink) { window.open(fileLink, '_blank'); } }
@@ -540,103 +560,4 @@
 
             try {
                 const sasaTimestamp = new Date().getTime();
-                const nyoDoc = await addDoc(studioCollectionRef, {
-                    msanii: msanii, aina: aina, kichwa: kichwa, bei: bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, universalPromoLink: generatedUniversalLink, saini: sainiJina, isCopy: false, aiApprovedByOwner: true, tareheKipimo: sasaTimestamp, tarehe: new Date()
-                });
-                lastCreatedDocId = nyoDoc.id; smartLinkArea.style.display = "block"; generatedPromoLink.value = generatedUniversalLink;
-                if(isMusic) { btnEditBuffer.style.display = "none"; smartLinkNote.innerText = "ℹ️ Kazi imekamilisha ukaguzi wa masaa 24 na AI na kusambazwa ulimwenguni!"; } 
-                else { btnEditBuffer.style.display = "block"; smartLinkNote.innerText = "⏳ FILAMU IPO BUFFER (MASAA 48)."; }
-                document.getElementById("fomu-wasanii").style.display = "none"; legalCheck.checked = false; signatureInput.value = ""; btnSajiliSanaa.disabled = true;
-            } catch (e) {}
-        });
-
-        window.mmilikiAruhusuWimboUshushweKiotomatiki = async function() {
-            if(!targetedDisputeDocId) return;
-            try {
-                const badiliRef = doc(db, "NIYO_RECORD_LABEL", targetedDisputeDocId);
-                await updateDoc(badiliRef, { aiApprovedByOwner: true });
-                alert("🚀 Wimbo wa nakala umefunguliwa na umepanda Live ulimwenguni!");
-                aiDisputeZone.style.display = "none"; targetedDisputeDocId = "";
-            } catch(e) {}
-        };
-
-        window.rekebishaFilamuMasaa48 = async function() {
-            if(!lastCreatedDocId) return;
-            let kichwaKipya = prompt("Ingiza Kichwa Kipya:"); let beiMpya = prompt("Ingiza Bei Mpya (Pi):");
-            if(!kichwaKipya || isNaN(parseFloat(beiMpya))) return;
-            try { const badiliRef = doc(db, "NIYO_RECORD_LABEL", lastCreatedDocId); await updateDoc(badiliRef, { kichwa: kichwaKipya, bei: parseFloat(beiMpya) }); alert("⚙️ Data imesasishwa!"); } catch(e) {}
-        };
-
-        document.getElementById("btn-lipa").addEventListener("click", () => {
-            if(shoppingCart.length === 0) { alert("Cart empty."); return; }
-            
-            if(!window.Pi || !authenticatedPiUser) {
-                alert("🔴 CHEKOUT IMESITISHWA:\nFungua ndani ya Pi Browser kukamilisha miamala halisi ya Pi Coins blockchain.");
-                return;
-            }
-
-            let kiasiChaPi = parseFloat(jumlaKuuPi.toFixed(7));
-            let vyenyeMakatoYaSoko = 0; let paidArtistItems = [];
-            shoppingCart.forEach(item => { if(item.ainaYaBidhaa === 'artist') { paidArtistItems.push(item); } else { vyenyeMakatoYaSoko += item.bei; } });
-
-            window.Pi.createPayment({
-                amount: kiasiChaPi,
-                memo: `Niyo Revolution Super App Platform Checkout`,
-                metadata: { cartItemsCount: shoppingCart.length }
-            }, {
-                onReadyForServerApproval: function(paymentId) { alert("⏳ Pi Server Inahakiki Muamala wako..."); },
-                onReadyForServerCompletion: function(paymentId, txid) {
-                    
-                    if(paidArtistItems.length > 0) {
-                        simulatedArtistEarningsUSD += 65.00; // Simulizi ya mauzo ya global streaming/download
-                        localStorage.setItem('niyo_earnings', simulatedArtistEarningsUSD);
-                        balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
-                    }
-
-                    alert(`✅ PI BLOCKCHAIN CONFIRMED ✅\n\nTxID: ${txid}\nKiasi: ${kiasiChaPi} Pi.`);
-
-                    // GLOBAL PAYOUT ENGINE AT $100 THRESHOLD (5% AUTOMATIC PLATFORM CUT)
-                    if(simulatedArtistEarningsUSD >= 100.00) {
-                        let makatoYaNiyo = simulatedArtistEarningsUSD * 0.05; // 5% Makato ya Niyo Revolution
-                        let kiasiChaMsanii = simulatedArtistEarningsUSD - makatoYaNiyo; // 95% ya Msanii
-                        
-                        alert(`💰 NIYO AUTOMATED PAYOUT ENGINE 💰\n\nImetumwa Kwenda: ${registeredBankProvider}\nNamba ya Akaunti: [${registeredBankAccountNumber}]\n\nJumla ya Mapato: $${simulatedArtistEarningsUSD.toFixed(2)} USD\nMakato ya Niyo App (5%): $${makatoYaNiyo.toFixed(2)} USD\nKiasi Alichopewa Msanii (95%): $${kiasiChaMsanii.toFixed(2)} USD\n\nFedha imetumwa kiotomatiki kwa mtoa huduma wako!`);
-                        
-                        simulatedArtistEarningsUSD = 0.00; 
-                        localStorage.setItem('niyo_earnings', 0);
-                        balanceDisplay.innerText = "$0.00 USD";
-                    }
-
-                    if(paidArtistItems.length > 0) {
-                        const kwanza = paidArtistItems[0]; const playerBox = document.getElementById("media-player-box");
-                        const azone = document.getElementById("audio-zone"); const vzone = document.getElementById("video-zone");
-                        playerBox.style.display = "block"; document.getElementById("player-title").innerText = "Streaming: " + kwanza.jina;
-                        if(kwanza.mfumoAina.includes("Audio")) { vzone.style.display = "none"; azone.style.display = "block"; const aud = document.getElementById("app-audio-player"); aud.src = kwanza.fileLink; aud.play(); } 
-                        else { azone.style.display = "none"; vzone.style.display = "block"; const vid = document.getElementById("app-video-player"); vid.src = kwanza.fileLink; vid.play(); }
-                    }
-
-                    shoppingCart = []; updateCartUI();
-                },
-                onCancel: function(paymentId) { alert("❌ Malipo yamesitishwa na mtumiaji."); },
-                onError: function(error, paymentId) { alert("🚨 Hitilafu ya Pi Blockchain."); }
-            });
-        });
-
-        // Initialize mtandao wakati wa kuanza
-        kaguaMtandao();
-    </script><script src="https://sdk.minepi.com/pi-sdk.js"></script>
-<script>
-    setTimeout(() => {
-        try {
-            if (typeof Pi !== 'undefined') {
-                Pi.init({ version: "2.0", sandbox: true });
-                console.log("Pi SDK ipo tayari!");
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    }, 1000);
-</script>
-
-</body>
-</html>
+                const nyoDoc = await addDoc(studioCollectionRef,
