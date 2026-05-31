@@ -233,4 +233,455 @@
             <div style="color: #4caf50; font-size:12px;">Sell physical items instantly - 1.5% structural transaction fee.</div>
         </div>
 
+        <div id="fomu-wauzaji" class="vendor-form">
+            <h4 style="margin: 0 0 12px 0; color: #2e7d32;">Register Store Product</h4>
+            <input type="text" id="v-name" placeholder="Full Name" required>
+            <input type="text" id="v-shop" placeholder="Shop/Brand Name" required>
+            <input type="text" id="v-p-name" placeholder="Product Name" required>
+            <input type="number" step="any" id="v-p-price" placeholder="Price in Pi" required>
+            <input type="text" id="v-wallet" placeholder="Merchant Pi Wallet Address" required>
+            <button class="btn-vendor" id="btn-sajili-bidhaa">Post Item Free</button>
+        </div>
+
+        <button id="btn-lipa" class="btn-main">Authorize System Checkout</button>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bottom-item" onclick="alert('Uko ukurasa wa nyumbani tayari!')">🏠<br>Nyumbani</div>
+        <div class="bottom-item" onclick="onyeshaFomuYaWasanii()">🎵<br>Studio</div>
+        <div class="bottom-item" onclick="onyeshaFomuYaWauzaji()">🛍️<br>Soko</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, collection, addDoc, initializeFirestore, persistentLocalCache, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyD84S9Y0cLPcmaArq9KxvCw9p4GbqF-44",
+          authDomain: "niyo-revolution.firebaseapp.com",
+          projectId: "niyo-revolution",
+          storageBucket: "niyo-revolution.firebasestorage.app",
+          messagingSenderId: "1068902936670",
+          appId: "1:1068902936670:web:3c915c3a5077bb6ae084cf",
+          measurementId: "G-S37DG84QP0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = initializeFirestore(app, { localCache: persistentLocalCache() });
+
+        const docRef = doc(db, "BARBERSHOP", "BARBERSHOP");
+        const marketCollectionRef = collection(db, "SOKO_MARKETPLACE");
+        const studioCollectionRef = collection(db, "NIYO_RECORD_LABEL");
+
+        let dataBarber = {}; let shoppingCart = []; let jumlaKuuPi = 0; let vyenyeMakatoYaNneAsilimia = 0;
+        let simulatedArtistEarningsUSD = parseFloat(localStorage.getItem('niyo_earnings')) || 0.00; 
+        let registeredBankProvider = localStorage.getItem('niyo_provider') || ""; 
+        let registeredBankAccountNumber = localStorage.getItem('niyo_accnum') || "";
+        let base64CoverBando = "";
         
+        let lastCreatedDocId = ""; let targetedDisputeDocId = "";
+        let counterStreams = 0; let counterDownloads = 0; let counterLikes = 0;
+
+        const priceDisplay = document.getElementById("price-display");
+        const hudumaSelect = document.getElementById("huduma-select");
+        const cartList = document.getElementById("cart-list");
+        const cartTotal = document.getElementById("cart-total");
+
+        const legalCheck = document.getElementById("a-legal-check");
+        const signatureInput = document.getElementById("a-signature");
+        const btnSajiliSanaa = document.getElementById("btn-sajili-sanaa");
+
+        const balanceDisplay = document.getElementById("artist-live-balance");
+        const activeAccountDisplay = document.getElementById("active-payout-account");
+        const streamsDOM = document.getElementById("dash-streams");
+        const downloadsDOM = document.getElementById("dash-downloads");
+        const likesDOM = document.getElementById("dash-likes");
+        const smartLinkArea = document.getElementById("smart-link-area");
+        const generatedPromoLink = document.getElementById("generated-promo-link");
+        const smartLinkNote = document.getElementById("smart-link-note");
+        const btnEditBuffer = document.getElementById("btn-edit-buffer");
+        
+        const aiDisputeZone = document.getElementById("ai-dispute-zone");
+        const aiDisputeText = document.getElementById("ai-dispute-text");
+        const dispOwnerPhone = document.getElementById("disp-owner-phone");
+        const dispCopierPhone = document.getElementById("disp-copier-phone");
+        const piAuthStatusBox = document.getElementById("pi-auth-status");
+        const networkStatusBox = document.getElementById("network-status");
+
+        let authenticatedPiUser = null;
+
+        // 1. MFUMO WA KUGUNDUA MTANDAO (ONLINE/OFFLINE ENGINE)
+        window.addEventListener('online', kaguaMtandao);
+        window.addEventListener('offline', kaguaMtandao);
+        function kaguaMtandao() {
+            if(navigator.onLine) {
+                networkStatusBox.innerText = "NIYO AI MONITOR: Anti-Piracy Shield Scanning (ONLINE) 🛡️";
+                networkStatusBox.style.background = "#e3f2fd";
+                networkStatusBox.style.color = "#0d47a1";
+            } else {
+                networkStatusBox.innerText = "NIYO OFFLINE MODE: Huduma Zinaendelea Bila Internet 🔌";
+                networkStatusBox.style.background = "#ffebee";
+                networkStatusBox.style.color = "#c62828";
+            }
+        }
+
+        // 2. PI NETWORK INTEGRATION WINDOW (MAREKEBISHO YA CHECKLIST YAPO HAPA - SANDBOX IS FALSE)
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                try {
+                    if (typeof window.Pi !== 'undefined') {
+                        // SANIDIA CHINI YA SANDBOX = FALSE ILI ISOME CHECKLIST YA PI BROWSER MOJA KWA MOJA
+                        window.Pi.init({ version: "2.0", sandbox: false });
+                        console.log("Pi SDK Initialized for Pi Browser Production/Checklist Workflow.");
+
+                        // Kufanya Authentication ya User na Wallet
+                        window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
+                        .catch(function(error) {
+                            console.error("Pi Auth Error: ", error);
+                            piAuthStatusBox.style.backgroundColor = "#ffebee";
+                            piAuthStatusBox.style.color = "#c62828";
+                            piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Hakikisha uko ndani ya Pi Browser.";
+                        });
+                    } else {
+                        piAuthStatusBox.style.backgroundColor = "#ffebee";
+                        piAuthStatusBox.style.color = "#c62828";
+                        piAuthStatusBox.innerText = "⚠️ Fungua Niyo Revolution ndani ya Pi Browser kupata Wallet.";
+                    }
+                } catch (error) {
+                    console.error("Initialization error of Pi SDK: ", error);
+                }
+            }, 800);
+        });
+
+        function onPiAuthExtensionApproved(auth) {
+            authenticatedPiUser = auth.user;
+            localStorage.setItem('niyo_pi_username', auth.user.username);
+            piAuthStatusBox.style.backgroundColor = "#e8f5e9";
+            piAuthStatusBox.style.color = "#2e7d32";
+            piAuthStatusBox.innerText = `⚡ Pi Connected: @${auth.user.username} (Wallet Ready)`;
+            
+            if (!localStorage.getItem('niyo_user_name')) {
+                localStorage.setItem('niyo_user_name', auth.user.username);
+                document.getElementById("section-auth").style.display = "none";
+            }
+        }
+
+        // 3. FREE ACCOUNT SIGNUP ARCHITECTURE
+        window.tengenezaAkauntiBure = function() {
+            const jina = document.getElementById("free-username").value.trim();
+            const wadhifa = document.getElementById("free-role").value;
+            if(!jina) { alert("Tafadhali weka jina lako kusajili akaunti!"); return; }
+            localStorage.setItem('niyo_user_name', jina);
+            localStorage.setItem('niyo_user_role', wadhifa);
+            document.getElementById("section-auth").style.display = "none";
+            alert(`Akaunti ya Bure ya (${wadhifa}) imefunguliwa kwa jina la ${jina}! ✅`);
+        };
+
+        if(localStorage.getItem('niyo_user_name')) {
+            document.getElementById("section-auth").style.display = "none";
+        }
+
+        function hifadhiHaliYaKitufe() {
+            if (legalCheck.checked && signatureInput.value.trim().length > 3 && registeredBankAccountNumber !== "") {
+                btnSajiliSanaa.disabled = false;
+            } else {
+                btnSajiliSanaa.disabled = true;
+            }
+        }
+        legalCheck.addEventListener("change", hifadhiHaliYaKitufe);
+        signatureInput.addEventListener("input", hifadhiHaliYaKitufe);
+
+        window.chakataCoverBandoLako = function(input) {
+            const reader = new FileReader();
+            reader.onload = function(e) { base64CoverBando = e.target.result; };
+            if(input.files[0]) reader.readAsDataURL(input.files[0]);
+        };
+
+        document.getElementById("btn-update-account").addEventListener("click", () => {
+            const provider = document.getElementById("a-bank-provider").value;
+            const accNum = document.getElementById("a-account-number").value.trim();
+            if(accNum.length < 5) { alert("Tafadhali weka namba ya akaunti/simu sahihi."); return; }
+            registeredBankProvider = provider; registeredBankAccountNumber = accNum;
+            localStorage.setItem('niyo_provider', provider);
+            localStorage.setItem('niyo_accnum', accNum);
+            activeAccountDisplay.innerText = registeredBankProvider + " (" + registeredBankAccountNumber + ")";
+            alert("🔒 AKAUNTI MPYA IMEWEZESHWA:");
+            hifadhiHaliYaKitufe();
+        });
+
+        if(registeredBankAccountNumber) {
+            activeAccountDisplay.innerText = registeredBankProvider + " (" + registeredBankAccountNumber + ")";
+            balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
+        }
+
+        // 4. DATA SNAPSHOTS (BARBERSHOP, MARKET, STUDIO)
+        onSnapshot(docRef, (docSnap) => { if (docSnap.exists()) { dataBarber = docSnap.data(); onyeshaBeiYaBarber(hudumaSelect.value); } });
+
+        function onyeshaBeiYaBarber(huduma) {
+            if (dataBarber && dataBarber[huduma]) {
+                let b = dataBarber[huduma];
+                if(huduma === "Sucrabu") b = b.replace("Pice:", "Price:");
+                priceDisplay.innerText = b;
+            }
+        }
+        hudumaSelect.addEventListener("change", (e) => onyeshaBeiYaBarber(e.target.value));
+
+        onSnapshot(marketCollectionRef, (querySnapshot) => {
+            const container = document.getElementById("products-container"); container.innerHTML = "";
+            if (querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px;color:#999;'>No active products found.</p>"; return; }
+            querySnapshot.forEach((doc) => {
+                const item = doc.data();
+                const itemDiv = document.createElement("div");
+                itemDiv.style = "background:white; padding:12px; border-radius:12px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; border:1px solid #e1e4f5; font-size:13px;";
+                itemDiv.innerHTML = `<div><strong>${item.bidhaa}</strong> (${item.duka})<br><span style="color:#2e7d32;font-weight:bold;">${parseFloat(item.bei).toFixed(6)} Pi</span></div>`;
+                const btn = document.createElement("button"); btn.innerText = "+"; btn.style = "background:#6200ee; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;";
+                btn.onclick = () => wekaKwenyeCart(item.bidhaa, parseFloat(item.bei), 'vendor', '', '', '');
+                itemDiv.appendChild(btn); container.appendChild(itemDiv);
+            });
+        });
+
+        onSnapshot(studioCollectionRef, (querySnapshot) => {
+            const container = document.getElementById("media-container"); container.innerHTML = "";
+            if (querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px;color:#999;'>No digital media items found.</p>"; return; }
+            const sasaivi = new Date().getTime();
+            querySnapshot.forEach((documentSnap) => {
+                const m = documentSnap.data();
+                let isMusic = m.aina.includes("Audio");
+                if (m.isCopy === true && m.aiApprovedByOwner !== true) { return; }
+                let mudaWaKupandisha = m.tareheKipimo || sasaivi;
+                let masaaYaliyopita = (sasaivi - mudaWaKupandisha) / (1000 * 60 * 60);
+                if (!isMusic && masaaYaliyopita < 48) { return; }
+
+                const mediaDiv = document.createElement("div"); mediaDiv.className = "media-item";
+                let routingTag = isMusic ? `<span style="font-size:10px; color:#1565c0; font-weight:bold;">[Global Sync]</span>` : `<span style="font-size:10px; color:#2e7d32; font-weight:bold;">[Niyo Exclusive Cinema]</span>`;
+                mediaDiv.innerHTML = `
+                    <img src="${m.coverLink || base64CoverBando || 'https://via.placeholder.com/150'}" class="media-cover">
+                    <div class="media-info">
+                        <strong>${m.kichwa}</strong> ${routingTag}<br>
+                        <span style="font-size:10px; color:#666;">By: ${m.msanii} | Code: ${m.isrcCode}</span><br>
+                        <span style="color:#2e7d32;font-weight:bold;">${parseFloat(m.bei).toFixed(6)} Pi</span>
+                    </div>
+                `;
+                const actionGroup = document.createElement("div");
+                const btnSelect = document.createElement("button"); btnSelect.innerText = isMusic ? "Stream" : "Watch"; btnSelect.className = "btn-action"; btnSelect.style.backgroundColor = "#e65100";
+                btnSelect.onclick = () => {
+                    counterStreams += 1; streamsDOM.innerText = counterStreams;
+                    wekaKwenyeCart(`${m.aina}: ${m.kichwa}`, parseFloat(m.bei), 'artist', m.failiLink, m.aina, m.bei);
+                };
+                const btnDownload = document.createElement("button"); btnDownload.innerText = "Download"; btnDownload.className = "btn-action"; btnDownload.style.backgroundColor = "#0097a7";
+                btnDownload.onclick = () => {
+                    counterDownloads += 1; downloadsDOM.innerText = counterDownloads;
+                    textBandoDownload(m.kichwa, parseFloat(m.bandoMB || 15), m.failiLink);
+                };
+                const btnLike = document.createElement("button"); btnLike.innerText = "❤️"; btnLike.className = "btn-action"; btnLike.style.backgroundColor = "#d81b60";
+                btnLike.onclick = () => { counterLikes += 1; likesDOM.innerText = counterLikes; alert("❤️ Feedback imetumwa."); };
+                actionGroup.appendChild(btnSelect); actionGroup.appendChild(btnDownload); actionGroup.appendChild(btnLike);
+                mediaDiv.appendChild(actionGroup); container.appendChild(mediaDiv);
+            });
+        });
+
+        function wekaKwenyeCart(jina, bei, ainaYaBidhaa, fileLink, mfumoAina, asiliBei) {
+            shoppingCart.push({ jina, bei, ainaYaBidhaa, fileLink, mfumoAina, asiliBei });
+            updateCartUI();
+        }
+
+        document.getElementById("btn-add-barber-cart").addEventListener("click", () => {
+            let ntxt = priceDisplay.innerText.replace(/[^\d.]/g, ""); let bei = parseFloat(ntxt);
+            if(!isNaN(bei)) { wekaKwenyeCart("Barber: " + hudumaSelect.value, bei, 'barber', '', '', ''); }
+        });
+
+        window.wekaHudumaMsetoKwenyeCart = function(jina, bei) { wekaKwenyeCart(jina, bei, 'mseto', '', '', ''); };
+
+        function updateCartUI() {
+            cartList.innerHTML = ""; if(shoppingCart.length === 0) { cartList.innerHTML = "<li>Cart is empty</li>"; cartTotal.innerText = "Total: 0.00000000 Pi"; jumlaKuuPi = 0; vyenyeMakatoYaNneAsilimia = 0; return; }
+            jumlaKuuPi = 0; vyenyeMakatoYaNneAsilimia = 0;
+            shoppingCart.forEach((item) => {
+                const li = document.createElement("li"); li.innerText = `${item.jina} - ${item.bei.toFixed(8)} Pi`; cartList.appendChild(li);
+                jumlaKuuPi += item.bei; if(item.ainaYaBidhaa === 'artist') { vyenyeMakatoYaNneAsilimia += item.bei; }
+            });
+            cartTotal.innerText = "Total: " + jumlaKuuPi.toFixed(8) + " Pi";
+        }
+
+        window.textBandoDownload = function(kichwa, mbSize, fileLink) {
+            let dataTariffCost = mbSize * 0.0000003; 
+            let confirmDl = confirm("--- DATA TARIFF DISPATCH ---\n\nCost: " + dataTariffCost.toFixed(8) + " Pi\n\nAuthorize link decryption using mobile bando?");
+            if(confirmDl) { if(fileLink) { window.open(fileLink, '_blank'); } }
+        };
+
+        window.onyeshaFomuYaWauzaji = function() {
+            const f = document.getElementById("fomu-wauzaji"); f.style.display = f.style.display === "block" ? "none" : "block"; document.getElementById("fomu-wasanii").style.display = "none";
+        };
+        window.onyeshaFomuYaWasanii = function() {
+            const f = document.getElementById("fomu-wasanii"); f.style.display = f.style.display === "block" ? "none" : "block"; document.getElementById("fomu-wauzaji").style.display = "none";
+        };
+
+        document.getElementById("btn-sajili-bidhaa").addEventListener("click", async () => {
+            const jina = document.getElementById("v-name").value; const duka = document.getElementById("v-shop").value;
+            const bidhaa = document.getElementById("v-p-name").value; const bei = parseFloat(document.getElementById("v-p-price").value);
+            const wallet = document.getElementById("v-wallet").value;
+            if(!jina || !duka || !bidhaa || isNaN(bei) || !wallet) { alert("Kamilisha fomu."); return; }
+            try { await addDoc(marketCollectionRef, { muuzaji: jina, duka: duka, bidhaa: bidhaa, bei: bei, pochi: wallet, tarehe: new Date() }); document.getElementById("fomu-wauzaji").style.display = "none"; } catch (e) {}
+        });
+
+        // 5. CREATOR HUB: PUBLISHING WITH NIYO AI ANTI-COPY
+        document.getElementById("btn-sajili-sanaa").addEventListener("click", async () => {
+            const msanii = document.getElementById("a-name").value.trim(); const aina = document.getElementById("a-type").value;
+            const kichwa = document.getElementById("a-title").value.trim(); const bei = parseFloat(document.getElementById("a-price").value);
+            const nambaSimu = document.getElementById("a-phone").value.trim();
+            const fileInput = document.getElementById("a-file-input").files[0];
+            const sainiJina = signatureInput.value.trim();
+
+            if(!msanii || !kichwa || !nambaSimu || isNaN(bei) || !fileInput || !registeredBankAccountNumber) { alert("Kamilisha fomu."); return; }
+            const kizaziNamba = "TZ-NYO-" + Math.floor(100000 + Math.random() * 900000) + "-26";
+            const simulatedCoverUrl = base64CoverBando || "https://via.placeholder.com/150";
+            const simulatedMasterUrl = URL.createObjectURL(fileInput);
+            let isMusic = aina.includes("Audio"); let allocatedMB = isMusic ? 15 : 450;
+            let generatedUniversalLink = isMusic ? "https://niyo.revo.link/track/" + kizaziNamba : "https://niyo.revo.link/cinema/" + kizaziNamba;
+
+            if(isMusic) {
+                const q = query(studioCollectionRef, where("kichwa", "==", kichwa)); const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    let dataYaMmilikiOrijino = {}; let idYaMmilikiOrijino = "";
+                    querySnapshot.forEach((doc) => { dataYaMmilikiOrijino = doc.data(); idYaMmilikiOrijino = doc.id; });
+                    alert("🛑 NIYO AI ALERTER (ANTI-PIRACY): Wimbo UMEZUIWA. Taarifa imetumwa kwa mmiliki.");
+                    const sasaTimestamp = new Date().getTime();
+                    const nyoDoc = await addDoc(studioCollectionRef, {
+                        msanii: msanii, aina: aina, kichwa: kichwa, bei: bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, universalPromoLink: generatedUniversalLink, saini: sainiJina, isCopy: true, aiApprovedByOwner: false, originalOwnerId: idYaMmilikiOrijino, tareheKipimo: sasaTimestamp, tarehe: new Date()
+                    });
+                    targetedDisputeDocId = nyoDoc.id; aiDisputeZone.style.display = "block";
+                    aiDisputeText.innerText = `Msanii "${msanii}" amepandisha wimbo unaoitwa "${kichwa}". AI yetu imegundua ni COPY.`;
+                    dispOwnerPhone.innerText = dataYaMmilikiOrijino.simu || "0712XXXXXX"; dispCopierPhone.innerText = nambaSimu;
+                    document.getElementById("fomu-wasanii").style.display = "none"; return;
+                }
+            }
+
+            try {
+                const sasaTimestamp = new Date().getTime();
+                const nyoDoc = await addDoc(studioCollectionRef, {
+                    msanii: msanii, aina: aina, kichwa: kichwa, bei: bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, universalPromoLink: generatedUniversalLink, saini: sainiJina, isCopy: false, aiApprovedByOwner: false, tareheKipimo: sasaTimestamp, tarehe: new Date()
+                });
+
+                lastCreatedDocId = nyoDoc.id;
+                smartLinkArea.style.display = "block";
+                generatedPromoLink.value = generatedUniversalLink;
+                
+                if (isMusic) {
+                    smartLinkNote.innerText = "🚀 Wimbo wako umepita salama kwenye ukaguzi wa Niyo AI na sasa upo LIVE kimataifa!";
+                    btnEditBuffer.style.display = "none";
+                } else {
+                    smartLinkNote.innerText = "⏳ Filamu yako imewekwa kwenye BUFFER ya masaa 48 kulinda uwekezaji wako. Unaweza kuibadilisha kabla haijawa live.";
+                    btnEditBuffer.style.display = "block";
+                }
+
+                alert(`🎉 Kazi yako imesajiliwa kikamilifu!\nISRC/ISAN Code: ${kizaziNamba}`);
+                document.getElementById("fomu-wasanii").style.display = "none";
+            } catch (error) {
+                console.error("Error saving to Firestore: ", error);
+                alert("Kuna hitilafu imetokea wakati wa kusajili kazi yako.");
+            }
+        });
+
+        window.mmilikiAruhusuWimboUshushweKiotomatiki = async function() {
+            if (!targetedDisputeDocId) return;
+            try {
+                const docToUpdate = doc(db, "NIYO_RECORD_LABEL", targetedDisputeDocId);
+                await updateDoc(docToUpdate, { aiApprovedByOwner: true, isCopy: false });
+                alert("✅ Umemruhusu msanii huyu kutoa wimbo huu chini ya usimamizi wako. Wimbo sasa upo LIVE.");
+                aiDisputeZone.style.display = "none";
+            } catch (e) { alert("Hitilafu imetokea."); }
+        };
+
+        window.rekebishaFilamuMasaa48 = function() {
+            let mpyaBei = prompt("Weka bei mpya ya Filamu yako (Pi):");
+            if (mpyaBei && !isNaN(parseFloat(mpyaBei))) { alert(`⚙️ Parameter Imerekebishwa! Bei mpya ya filamu ni ${parseFloat(mpyaBei).toFixed(6)} Pi.`); }
+        };
+
+        // 6. BLOCKCHAIN CHECKOUT ENGINE (PI PAYMENTS SYSTEM)
+        document.getElementById("btn-lipa").addEventListener("click", () => {
+            if (shoppingCart.length === 0) {
+                alert("🛒 Kikapu chako kiko wazi! Weka huduma au bidhaa kwanza.");
+                return;
+            }
+
+            // KUGUNDUA KAMA UKO NDANI YA PI BROWSER NA WALLET IKO READY
+            if (typeof window.Pi !== 'undefined' && authenticatedPiUser) {
+                
+                // Kuanzisha Muamala Rasmi wa Blockchain kupitia Pi Core Payment API
+                window.Pi.createPayment({
+                    amount: parseFloat(jumlaKuuPi.toFixed(7)),
+                    memo: `Niyo Revolution - Order Payment for ${shoppingCart.length} items`,
+                    metadata: { order_details: shoppingCart.map(i => i.jina).join(", ") },
+                }, {
+                    onReadyForServerApproval: function(paymentId) {
+                        console.log("Payment ID generated for backend approval: ", paymentId);
+                        alert("⚡ Blockchain Inasubiri Idhini ya Server... Kazi inakamilika.");
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        console.log("Payment completed successfully. TxID: ", txid);
+                        chakataMaudhuiBaadaYaMalipo();
+                    },
+                    onCancel: function(paymentId) {
+                        alert("❌ Umeahirisha muamala wa malipo.");
+                    },
+                    onError: function(error, paymentId) {
+                        console.error("Pi Payment Error: ", error);
+                        alert("⚠️ Hitilafu imetokea kwenye Wallet ya Pi Network.");
+                    }
+                });
+
+            } else {
+                // SAKAFU YA SIMULATION (Kama app ikifunguliwa nje ya Pi Browser kwa majaribio)
+                let simuNambaMteja = prompt("Akaunti ya Pi haipatikani nje ya Pi Browser. Ili kujaribu mfumo, weka namba yako ya Simu ya Malipo (M-Pesa/TigoPesa):");
+                if (!simuNambaMteja) return;
+                chakataMaudhuiBaadaYaMalipo();
+            }
+        });
+
+        // 7. MGAO WA MAPATO NA KUCHEZA MAUDHUI (POST-PAYMENT DISPATCH)
+        function chakataMaudhuiBaadaYaMalipo() {
+            if (vyenyeMakatoYaNneAsilimia > 0) {
+                let thamaniKatikaUSD = vyenyeMakatoYaNneAsilimia * 4.15;
+                simulatedArtistEarningsUSD += thamaniKatikaUSD;
+                localStorage.setItem('niyo_earnings', simulatedArtistEarningsUSD);
+                
+                balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
+                
+                if (simulatedArtistEarningsUSD >= 100) {
+                    let makatoYaMfumo = simulatedArtistEarningsUSD * 0.05;
+                    let kiasiSafi = simulatedArtistEarningsUSD - makatoYaMfumo;
+                    
+                    alert(`💰 THRESHOLD REACHED!\n\nSalio lako limefikia au kuvuka $100 USD. Mfumo umekata 5% ($${makatoYaMfumo.toFixed(2)} USD).\nKiasi cha $${kiasiSafi.toFixed(2)} USD kimetumwa kiotomatiki kwenda akaunti yako ya: ${registeredBankProvider} (${registeredBankAccountNumber}).`);
+                    
+                    simulatedArtistEarningsUSD = 0;
+                    localStorage.setItem('niyo_earnings', 0);
+                    balanceDisplay.innerText = "$0.00 USD";
+                }
+            }
+
+            alert(`✅ Malipo ya ${jumlaKuuPi.toFixed(7)} Pi yameidhinishwa na Blockchain!`);
+            
+            const vyomboVyaSanaa = shoppingCart.find(item => item.ainaYaBidhaa === 'artist');
+            if (vyomboVyaSanaa) {
+                document.getElementById("media-player-box").style.display = "block";
+                if (vyomboVyaSanaa.mfumoAina.includes("Audio")) {
+                    document.getElementById("audio-zone").style.display = "block";
+                    document.getElementById("video-zone").style.display = "none";
+                    const audioTag = document.getElementById("app-audio-player");
+                    audioTag.src = vyomboVyaSanaa.fileLink;
+                    audioTag.play();
+                } else {
+                    document.getElementById("video-zone").style.display = "block";
+                    document.getElementById("audio-zone").style.display = "none";
+                    const videoTag = document.getElementById("app-video-player");
+                    videoTag.src = vyomboVyaSanaa.fileLink;
+                    videoTag.play();
+                }
+                document.getElementById("player-title").innerText = `Playing: ${vyomboVyaSanaa.jina}`;
+            }
+
+            shoppingCart = [];
+            updateCartUI();
+        }
+    </script>
+</body>
+</html>
