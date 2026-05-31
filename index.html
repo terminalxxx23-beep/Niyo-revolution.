@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
@@ -325,14 +325,16 @@
             }
         }
 
-        // 2. PI NETWORK INTEGRATION WINDOW (MAREKEBISHO YA CHECKLIST YAPO HAPA - SANDBOX IS FALSE)
+        // 2. PI NETWORK INTEGRATION WINDOW (MABORESHO YA DETECTION NA POLLING LOOP YAPO HAPA)
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                try {
-                    if (typeof window.Pi !== 'undefined') {
-                        // SANIDIA CHINI YA SANDBOX = FALSE ILI ISOME CHECKLIST YA PI BROWSER MOJA KWA MOJA
+            let pachekiPiSdkMudaWote = setInterval(() => {
+                if (typeof window.Pi !== 'undefined') {
+                    clearInterval(pachekiPiSdkMudaWote); // Simamisha loop baada ya kuipata Pi SDK
+                    
+                    try {
+                        // Kuanzisha production workflow bila Sandbox
                         window.Pi.init({ version: "2.0", sandbox: false });
-                        console.log("Pi SDK Initialized for Pi Browser Production/Checklist Workflow.");
+                        console.log("Pi SDK imepatikana na kuanzishwa kwa mafanikio.");
 
                         // Kufanya Authentication ya User na Wallet
                         window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
@@ -340,17 +342,23 @@
                             console.error("Pi Auth Error: ", error);
                             piAuthStatusBox.style.backgroundColor = "#ffebee";
                             piAuthStatusBox.style.color = "#c62828";
-                            piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Hakikisha uko ndani ya Pi Browser.";
+                            piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Hakikisha uko ndani ya Pi Browser au ruhusu muunganisho.";
                         });
-                    } else {
-                        piAuthStatusBox.style.backgroundColor = "#ffebee";
-                        piAuthStatusBox.style.color = "#c62828";
-                        piAuthStatusBox.innerText = "⚠️ Fungua Niyo Revolution ndani ya Pi Browser kupata Wallet.";
+                    } catch (error) {
+                        console.error("Initialization error of Pi SDK: ", error);
                     }
-                } catch (error) {
-                    console.error("Initialization error of Pi SDK: ", error);
                 }
-            }, 800);
+            }, 300); // Inakagua kila baada ya milizeti 300 kuhakikisha haifeli hata page ikiload haraka
+
+            // Ukomo wa usalama: Ikitokea imepita sekunde 10 bila kuipata Pi SDK, inaacha kutafuta.
+            setTimeout(() => {
+                clearInterval(pachekiPiSdkMudaWote);
+                if (typeof window.Pi === 'undefined') {
+                    piAuthStatusBox.style.backgroundColor = "#ffebee";
+                    piAuthStatusBox.style.color = "#c62828";
+                    piAuthStatusBox.innerText = "⚠️ Pi Connection Mode: Hakikisha uko ndani ya Pi Browser.";
+                }
+            }, 10000);
         });
 
         function onPiAuthExtensionApproved(auth) {
@@ -685,3 +693,4 @@
     </script>
 </body>
 </html>
+       
