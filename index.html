@@ -690,49 +690,7 @@
             shoppingCart = [];
             updateCartUI();
         }
-    </script>        // 2. PI NETWORK INTEGRATION WINDOW (MABORESHO MAKUBWA YA DETECTOR)
-        function anzishaPiNetworkAuth() {
-            if (typeof window.Pi !== 'undefined') {
-                try {
-                    // Muhimu: Kwenye Sandbox/Majaribio weka true, Kwenye Production weka false
-                    window.Pi.init({ version: "2.0", sandbox: false });
-                    console.log("Pi SDK imepata mawasiliano rasmi.");
-
-                    // Kuomba Authenticate
-                    window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
-                    .catch(function(error) {
-                        console.error("Pi Auth Error: ", error);
-                        piAuthStatusBox.style.backgroundColor = "#ffebee";
-                        piAuthStatusBox.style.color = "#c62828";
-                        piAuthStatusBox.innerHTML = "⚠️ Pi Wallet Imekataa: Ruhusu muunganisho kwenye Pi Browser.";
-                    });
-                } catch (error) {
-                    console.error("Pi Init Failed: ", error);
-                }
-            } else {
-                piAuthStatusBox.style.backgroundColor = "#ffebee";
-                piAuthStatusBox.style.color = "#c62828";
-                piAuthStatusBox.innerHTML = `
-                    ⚠️ Pi Wallet haipatikani automatically. <br>
-                    <button onclick="jaribuTenaKuunganishaPi()" style="margin-top:5px; padding:6px 12px; background:#6200ee; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">
-                        🔄 Unganisha Wallet kwa Mkono
-                    </button>
-                `;
-            }
-        }
-
-        // Kagua mara tu ukurasa unapomaliza ku-load kabisa (Pamoja na script za nje)
-        window.addEventListener('load', () => {
-            // Subiri sekunde 1 ili kuruhusu Pi Browser i-inject window.Pi kikamilifu
-            setTimeout(anzishaPiNetworkAuth, 1000);
-        });
-
-        // Kitufe cha kulazimisha unganisho (Manual Trigger)
-        window.jaribuTenaKuunganishaPi = function() {
-            piAuthStatusBox.innerHTML = "Inajaribu tena kuunganisha... 🔄";
-            anzishaPiNetworkAuth();
-        };
-
+    </script>        
 </body>
 </html>
        
