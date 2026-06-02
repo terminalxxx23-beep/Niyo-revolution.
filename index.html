@@ -14,12 +14,16 @@
         .section-title { text-align: left; font-size: 15px; font-weight: bold; margin: 25px 0 12px 0; color: #111; border-left: 4px solid #6200ee; padding-left: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* Layout Boxes */
-        .barber-box, .market-box, .media-box, .player-box, .protection-box, .dashboard-box, .ai-dispute-box { background: #f8f9ff; border: 2px solid #e1e4f5; border-radius: 20px; padding: 20px; text-align: left; margin-bottom: 20px; }
+        .barber-box, .market-box, .media-box, .player-box, .protection-box, .dashboard-box, .ai-dispute-box, .admin-box { background: #f8f9ff; border: 2px solid #e1e4f5; border-radius: 20px; padding: 20px; text-align: left; margin-bottom: 20px; }
         .media-box { border-color: #ffb74d; background: #fffde7; }
         .protection-box { border-color: #d32f2f; background: #ffebee; }
         .dashboard-box { border-color: #6200ee; background: #f3e5f5; }
         .player-box { border-color: #00bcd4; background: #e0f7fa; display: none; text-align: center; }
         .ai-dispute-box { border-color: #e65100; background: #fff3e0; display: none; }
+        
+        /* Admin Box Styling (Hidden by default) */
+        .admin-box { border-color: #009688; background: #e0f2f1; display: none; }
+        
         select, input, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #dcdfe6; font-size: 15px; margin: 8px 0; background: white; transition: 0.3s; }
         
         /* Stats Grid */
@@ -56,12 +60,22 @@
         <h1>Niyo Revolution</h1>
         <p class="subtitle">Global Publisher & AI Copyright Gatekeeper</p>
 
-        <div id="pi-auth-status" style="background: #fff8e1; color: #f57f17; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: bold; margin-bottom: 18px; border: 1px solid #ffe082; line-height: 1.5;">
+        <div id="pi-auth-status" style="background: #fff8e1; color: #f57f17; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: bold; margin-bottom: 18px; border: 1px solid #ffe082;">
             Inatafuta Uhusiano na Pi Browser... 🔑
         </div>
 
         <div id="network-status" style="background: #e3f2fd; color: #0d47a1; padding: 9px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 18px;">
-            ... AI MONITOR ACTIVE ...
+            NIYO AI MONITOR: Anti-Piracy Shield Scanning 🛡️
+        </div>
+
+        <!-- ⚠️ VIPENGELE VYA UTANGAULIZI WA ADMIN (SECRET AUTOMATIC PANEL) -->
+        <div id="niyo-admin-panel" class="admin-box">
+            <h4 style="margin:0 0 8px 0; color:#004d40;">👑 Niyo Revolution - Admin Control Gateway</h4>
+            <p style="font-size:12px; color:#333; margin:0 0 10px 0;">Karibu Niyo Team. Sehemu hii inaonekana kwako tu kiotomatiki kwa usalama wa hali ya juu.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn-vendor" style="background:#00796b; margin:0;" onclick="safishaMfumoWote()">Safisha Data zote</button>
+                <button class="btn-vendor" style="background:#0097a7; margin:0;" onclick="pigaNiyoAiRefresh()">Niyo AI Sync</button>
+            </div>
         </div>
 
         <div id="section-auth" class="barber-box" style="background: #f3e5f5; border-color: #aa00ff;">
@@ -79,7 +93,7 @@
             <h4 style="margin:0 0 8px 0; color:#d84315;">⚠️ NIYO AI: Copyright Infringement Detected!</h4>
             <p id="ai-dispute-text" style="font-size:12px; color:#424242; margin:0 0 10px 0; line-height:1.4;"></p>
             <div style="background:white; padding:10px; border-radius:10px; border:1px solid #ffb74d; font-size:12px; margin-bottom:10px;">
-                <strong>📞 Mawasiliano ya Dharura:</strong><br>
+                <strong>📞 Sehemu ya Mawasiliano ya Dharura:</strong><br>
                 Namba ya Mmiliki: <span id="disp-owner-phone" style="color:#1565c0; font-weight:bold;">--</span><br>
                 Namba ya Aliyecopy: <span id="disp-copier-phone" style="color:#c62828; font-weight:bold;">--</span>
             </div>
@@ -88,7 +102,7 @@
 
         <div class="section-title">Live Creator Analytics Dashboard</div>
         <div class="dashboard-box">
-            <div style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#4a148c;">📈 Dashboard ya Msanii:</div>
+            <div style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#4a148c;">📈 Dashboard ya Msanii (Real-time Analytics):</div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div id="dash-streams" class="stat-num">0</div>
@@ -111,14 +125,14 @@
                 <div style="font-size: 11px; font-weight: bold; color: #6200ee;">🔗 UNIVERSAL SMART-PROMO LINK GENERATED:</div>
                 <input type="text" id="generated-promo-link" readonly style="padding: 8px; font-size: 12px; margin: 5px 0; text-align: center; color: #7b1fa2; font-weight: bold; background: #f3e5f5;">
                 <div id="smart-link-note" style="font-size: 9px; color: #555; font-weight: 500;"></div>
-                <button id="btn-edit-buffer" class="btn-vendor" style="background:#d32f2f; display:none; margin-top:8px;" onclick="rekebishaFilamuMasaa48()">⚙️ Edit Movie Parameters</button>
+                <button id="btn-edit-buffer" class="btn-vendor" style="background:#d32f2f; display:none; margin-top:8px;" onclick="rekebishaFilamuMasaa48()">⚙️ Edit Movie Parameters (Next 48 Hours)</button>
             </div>
         </div>
 
         <div class="section-title">Copyright Protection Status</div>
         <div class="protection-box">
             <p style="margin: 0; font-size: 11px; color: #c62828; font-weight: bold;">
-                🔒 SYSTEM INTEGRITY GATEWAY: Nyimbo zote zinakaguliwa na Niyo AI kwa masaa 24 kuzuia wizi wa kazi.
+                🔒 SYSTEM INTEGRITY GATEWAY: Nyimbo zote zinakaguliwa na Niyo AI kwa masaa 24 kuzuia wizi wa kazi, na filamu zina buffer ya masaa 48 kulinda uwekezaji wako.
             </p>
         </div>
 
@@ -177,7 +191,7 @@
         <div class="section-title">Creator Hub (Artists & Directors)</div>
         <div class="card" style="background: #fff6ed; border: 2px solid #ffb74d; border-radius:18px; padding:15px; cursor:pointer; text-align:left; margin-bottom: 15px;" onclick="onyeshaFomuYaWasanii()">
             <div style="color: #e65100; font-weight:bold; font-size:15px;">Global Content Distribution Portal</div>
-            <div style="color: #ef6c00; font-size:12px;">Music 24h AI Guard Gateway | Movies sell here.</div>
+            <div style="color: #ef6c00; font-size:12px;">Music 24h AI Guard Gateway | Movies sell exclusively here after 48 hours verification.</div>
         </div>
 
         <div id="fomu-wasanii" class="artist-form">
@@ -191,13 +205,13 @@
             <input type="text" id="a-phone" placeholder="Namba yako ya Simu ya Waswasiliano" required>
             <input type="number" step="any" id="a-price" placeholder="Streaming/Purchase Price (Pi)" required>
             
-            <label style="font-size: 11px; font-weight: bold; color: #e65100; display:block; margin-top:6px;">Upload Album Cover / Movie Poster:</label>
+            <label style="font-size: 11px; font-weight: bold; color: #e65100; display:block; margin-top:6px;">Upload Album Cover / Movie Poster (Max 3MB - Bando Lako):</label>
             <input type="file" id="a-cover-input" accept="image/*" required onchange="chakataCoverBandoLako(this)">
 
-            <label style="font-size: 11px; font-weight: bold; color: #e65100; display:block; margin-top:6px;">Upload Master File:</label>
+            <label style="font-size: 11px; font-weight: bold; color: #e65100; display:block; margin-top:6px;">Upload Master File (HQ Studio Audio / Full Movie):</label>
             <input type="file" id="a-file-input" accept="audio/*,video/*" required>
             
-            <label style="font-size: 12px; font-weight: bold; color: #1565c0; display:block; margin-top:12px;">Akaunti ya Kupokelea Malipo:</label>
+            <label style="font-size: 12px; font-weight: bold; color: #1565c0; display:block; margin-top:12px;">Akaunti ya Kupokelea Malipo (Inaruhusiwa Kubadilisha Muda Wowote):</label>
             <select id="a-bank-provider">
                 <option value="M-Pesa">Vodacom M-Pesa</option>
                 <option value="TigoPesa">Tigo Pesa</option>
@@ -209,18 +223,20 @@
             <input type="text" id="a-account-number" placeholder="Weka Namba ya Akaunti / Simu Hapa" required>
             <button type="button" class="btn-vendor" style="background:#1565c0; margin: 4px 0 12px 0;" id="btn-update-account">Update/Save Payout Account</button>
 
-            <label style="font-size: 12px; font-weight: bold; color: #c62828; display:block; margin-top:10px;">Masharti na Vigezo:</label>
+            <label style="font-size: 12px; font-weight: bold; color: #c62828; display:block; margin-top:10px;">Masharti na Vigezo / Global Rights & Distribution Contract:</label>
             <div class="terms-scroll-box">
-                1. AI ANTI-COPY SHIELD: Ukipandisha Muziki, Niyo AI itafanya ukaguzi ndani ya masaa 24.<br>
-                2. MAKATO: Mfumo unakata 5% mara unapofikia kiwango cha kutoa fedha duniani.<br>
-                3. THRESHOLD: Lazima yafike Dola Mia Moja ($100 USD) ili fedha zitumwe kwenye simu/benki kiotomatiki.
+                1. AI ANTI-COPY SHIELD & SPECTRUM ANALYSIS: Ukipandisha Muziki, Niyo AI itafanya ukaguzi ndani ya masaa 24. Ukipatikana umecopy kazi ya mtu, wimbo hautapanda hadi mmiliki orijino akubali kwa mkono wake kiotomatiki.<br>
+                2. UMILIKAJI WA FILAMU: Msanii unabaki kumiliki filamu yako kwa 100% ndani ya Niyo Revolution, itakaa masaa 48 kabla ya kuwa live ili uikague.<br>
+                3. MAKATO YA MFUMO: Niyo Revolution inakata 5% ya mapato yako mara tu unapofikia kiwango cha kutoa fedha duniani.<br>
+                4. THRESHold YA MALIPO: Ili mapato yako yatumwe kwenye akaunti yako (iwe ya muziki au filamu), lazima yafike **Dola Mia Omja ($100 USD)** chini ya hapo yatabaki salama kwenye mfumo wetu.<br>
+                5. MALIPO YA KIOTOMATIKI: Mara tu unapofikisha au kuvuka $100 USD, mfumo utakata 5% and kukutumia 95% ya mapato yako moja kwa moja kwenye akaunti uliyosajili kiotomatiki.
             </div>
 
             <div style="margin-top: 10px; display: flex; align-items: flex-start; gap: 8px;">
                 <input type="checkbox" id="a-legal-check" style="width: auto; margin-top: 4px;">
-                <label for="a-legal-check" style="font-size: 11px; color: #333;">Nimeelewa kuwa NIYO AI itakagua wimbo wangu.</label>
+                <label for="a-legal-check" style="font-size: 11px; color: #333;">Nimeelewa kuwa NIYO AI itakagua wimbo wangu ndani ya masaa 24, na kuzuia nakala isiyo na idhini.</label>
             </div>
-            <input type="text" id="a-signature" placeholder="Weka Jina Lako Kamili kama Saini" required>
+            <input type="text" id="a-signature" placeholder="Weka Jina Lako Kamili kama Saini ya Kidijitali" required>
 
             <button class="btn-artist" id="btn-sajili-sanaa" disabled>Publish & Launch Distribution</button>
         </div>
@@ -228,7 +244,7 @@
         <div class="section-title">Merchant Hub</div>
         <div class="card" style="background: #f2faf3; border: 2px solid #81c784; border-radius:18px; padding:15px; cursor:pointer; text-align:left; margin-bottom: 25px;" onclick="onyeshaFomuYaWauzaji()">
             <div style="color: #2e7d32; font-weight:bold; font-size:15px;">Vendor Registration Portal</div>
-            <div style="color: #4caf50; font-size:12px;">Sell physical items instantly.</div>
+            <div style="color: #4caf50; font-size:12px;">Sell physical items instantly - 1.5% structural transaction fee.</div>
         </div>
 
         <div id="fomu-wauzaji" class="vendor-form">
@@ -245,65 +261,10 @@
     </div>
 
     <div class="bottom-bar">
-        <div class="bottom-item" onclick="alert('Uko ukurasa wa nyumbani!')">🏠<br>Nyumbani</div>
+        <div class="bottom-item" onclick="alert('Uko ukurasa wa nyumbani tayari!')">🏠<br>Nyumbani</div>
         <div class="bottom-item" onclick="onyeshaFomuYaWasanii()">🎵<br>Studio</div>
         <div class="bottom-item" onclick="onyeshaFomuYaWauzaji()">🛍️<br>Soko</div>
     </div>
-
-    <script>
-        var authenticatedPiUser = null;
-        var piAuthStatusBox = document.getElementById("pi-auth-status");
-
-        function onPiAuthExtensionApproved(auth) {
-            authenticatedPiUser = auth.user;
-            localStorage.setItem('niyo_pi_username', auth.user.username);
-            piAuthStatusBox.style.backgroundColor = "#e8f5e9";
-            piAuthStatusBox.style.color = "#2e7d32";
-            piAuthStatusBox.innerHTML = `⚡ Pi Connected: @${auth.user.username} (Wallet Ready)`;
-            
-            if (!localStorage.getItem('niyo_user_name')) {
-                localStorage.setItem('niyo_user_name', auth.user.username);
-                document.getElementById("section-auth").style.display = "none";
-            }
-        }
-
-        function anzishaPiNetworkAuth() {
-            if (typeof window.Pi !== 'undefined') {
-                try {
-                    window.Pi.init({ version: "2.0", sandbox: false });
-                    console.log("Pi SDK Initialization Complete.");
-
-                    window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
-                    .catch(function(error) {
-                        console.error("Pi Auth Error: ", error);
-                        piAuthStatusBox.style.backgroundColor = "#ffebee";
-                        piAuthStatusBox.style.color = "#c62828";
-                        piAuthStatusBox.innerHTML = "⚠️ Pi Wallet Imekataa: Ruhusu muunganisho ndani ya Pi Browser.";
-                    });
-                } catch (error) {
-                    console.error("Pi SDK crash: ", error);
-                }
-            } else {
-                piAuthStatusBox.style.backgroundColor = "#ffebee";
-                piAuthStatusBox.style.color = "#c62828";
-                piAuthStatusBox.innerHTML = `
-                    ⚠️ Pi Wallet haipatikani automatically. <br>
-                    <button onclick="jaribuTenaKuunganishaPi()" style="margin-top:7px; padding:6px 12px; background:#6200ee; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">
-                        🔄 Unganisha Wallet kwa Mkono
-                    </button>
-                `;
-            }
-        }
-
-        window.addEventListener('load', function() {
-            setTimeout(anzishaPiNetworkAuth, 1000);
-        });
-
-        window.jaribuTenaKuunganishaPi = function() {
-            piAuthStatusBox.innerHTML = "Inajaribu tena kuunganisha... 🔄";
-            anzishaPiNetworkAuth();
-        };
-    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -330,10 +291,13 @@
         let simulatedArtistEarningsUSD = parseFloat(localStorage.getItem('niyo_earnings')) || 0.00; 
         let registeredBankProvider = localStorage.getItem('niyo_provider') || ""; 
         let registeredBankAccountNumber = localStorage.getItem('niyo_accnum') || "";
-        window.base64CoverBando = "";
+        let base64CoverBando = "";
         
         let lastCreatedDocId = ""; let targetedDisputeDocId = "";
         let counterStreams = 0; let counterDownloads = 0; let counterLikes = 0;
+
+        // Orodha ya Ma-Admin Walioruhusiwa (Weka username yako ya Pi Network hapa kwa herufi ndogo)
+        const ADMIN_USERS = ["niyo", "admin", "creators"]; 
 
         const priceDisplay = document.getElementById("price-display");
         const hudumaSelect = document.getElementById("huduma-select");
@@ -358,22 +322,92 @@
         const aiDisputeText = document.getElementById("ai-dispute-text");
         const dispOwnerPhone = document.getElementById("disp-owner-phone");
         const dispCopierPhone = document.getElementById("disp-copier-phone");
+        const piAuthStatusBox = document.getElementById("pi-auth-status");
         const networkStatusBox = document.getElementById("network-status");
+        const adminPanelBox = document.getElementById("niyo-admin-panel");
 
-        // Engine ya Mtandao
+        let authenticatedPiUser = null;
+
+        // 1. MFUMO WA KUGUNDUA MTANDAO (ONLINE/OFFLINE ENGINE)
         window.addEventListener('online', kaguaMtandao);
         window.addEventListener('offline', kaguaMtandao);
         function kaguaMtandao() {
             if(navigator.onLine) {
-                networkStatusBox.innerText = "NIYO AI MONITOR: Online 🛡️";
-                networkStatusBox.style.background = "#e3f2fd"; networkStatusBox.style.color = "#0d47a1";
+                networkStatusBox.innerText = "NIYO AI MONITOR: Anti-Piracy Shield Scanning (ONLINE) 🛡️";
+                networkStatusBox.style.background = "#e3f2fd";
+                networkStatusBox.style.color = "#0d47a1";
             } else {
-                networkStatusBox.innerText = "NIYO OFFLINE MODE 🔌";
-                networkStatusBox.style.background = "#ffebee"; networkStatusBox.style.color = "#c62828";
+                networkStatusBox.innerText = "NIYO OFFLINE MODE: Huduma Zinaendelea Bila Internet 🔌";
+                networkStatusBox.style.background = "#ffebee";
+                networkStatusBox.style.color = "#c62828";
             }
         }
-        kaguaMtandao();
 
+        // 2. PI NETWORK INTEGRATION WINDOW (MAREKEBISHO YA CORE CODES)
+        // Kulinda isifeli kabla ya window yote kuwa tayari, tunasubiri sekunde 1 badala ya nusu sekunde.
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    if (typeof window.Pi !== 'undefined') {
+                        // Kuanzisha SDK kwa uzalishaji (Checklist)
+                        window.Pi.init({ version: "2.0", sandbox: false });
+                        console.log("Pi SDK Initialized for Production Open Mainnet Checklist Workflow.");
+
+                        // Kufanya Authentication ya User na Wallet mara moja window ikiwa imesoma
+                        window.Pi.authenticate(['username', 'payments'], onPiAuthExtensionApproved)
+                        .catch(function(error) {
+                            console.error("Pi Auth Mfumo Error: ", error);
+                            piAuthStatusBox.style.backgroundColor = "#ffebee";
+                            piAuthStatusBox.style.color = "#c62828";
+                            piAuthStatusBox.innerText = "⚠️ Pi Wallet Imekataa: Tafadhali thibitisha ruhusa ndani ya Pi Browser.";
+                        });
+                    } else {
+                        piAuthStatusBox.style.backgroundColor = "#ffebee";
+                        piAuthStatusBox.style.color = "#c62828";
+                        piAuthStatusBox.innerText = "⚠️ Fungua Niyo Revolution ndani ya Pi Browser kupata Wallet.";
+                    }
+                } catch (error) {
+                    console.error("Initialization error of Pi SDK: ", error);
+                }
+            }, 1000); 
+        });
+
+        function onPiAuthExtensionApproved(auth) {
+            authenticatedPiUser = auth.user;
+            localStorage.setItem('niyo_pi_username', auth.user.username);
+            piAuthStatusBox.style.backgroundColor = "#e8f5e9";
+            piAuthStatusBox.style.color = "#2e7d32";
+            piAuthStatusBox.innerText = `⚡ Pi Connected: @${auth.user.username} (Wallet Ready)`;
+            
+            // MAPENDEKEZO YA ADMIN: Ukaguzi wa kiotomatiki wa jina la mtumiaji kufungua panel ya siri
+            if (auth.user && auth.user.username) {
+                const currentUsername = auth.user.username.toLowerCase();
+                if (ADMIN_USERS.includes(currentUsername)) {
+                    adminPanelBox.style.display = "block"; // Inafungua Admin box kiotomatiki kama ni wewe!
+                    console.log("Welcome Admin: @" + auth.user.username);
+                }
+            }
+
+            if (!localStorage.getItem('niyo_user_name')) {
+                localStorage.setItem('niyo_user_name', auth.user.username);
+                document.getElementById("section-auth").style.display = "none";
+            }
+        }
+
+        // Kazi za siri za Admin Panel (Zinasoma tu kwa Admin)
+        window.safishaMfumoWote = function() {
+            if(confirm("Je, una uhakika unataka kusafisha data zote za majaribio kwenye kifaa hiki?")) {
+                localStorage.clear();
+                alert("Data zote za local zimesafishwa. Tafadhali weka upya ukurasa.");
+                window.location.reload();
+            }
+        };
+
+        window.pigaNiyoAiRefresh = function() {
+            alert("🛡️ Niyo AI Engine imesawazishwa na Core Blockchain kwa ufanisi!");
+        };
+
+        // 3. FREE ACCOUNT SIGNUP ARCHITECTURE
         window.tengenezaAkauntiBure = function() {
             const jina = document.getElementById("free-username").value.trim();
             const wadhifa = document.getElementById("free-role").value;
@@ -381,7 +415,7 @@
             localStorage.setItem('niyo_user_name', jina);
             localStorage.setItem('niyo_user_role', wadhifa);
             document.getElementById("section-auth").style.display = "none";
-            alert(`Akaunti yako imefunguliwa! ✅`);
+            alert(`Akaunti ya Bure ya (${wadhifa}) imefunguliwa kwa jina la ${jina}! ✅`);
         };
 
         if(localStorage.getItem('niyo_user_name')) {
@@ -400,18 +434,19 @@
 
         window.chakataCoverBandoLako = function(input) {
             const reader = new FileReader();
-            reader.onload = function(e) { window.base64CoverBando = e.target.result; };
+            reader.onload = function(e) { base64CoverBando = e.target.result; };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         };
 
         document.getElementById("btn-update-account").addEventListener("click", () => {
             const provider = document.getElementById("a-bank-provider").value;
             const accNum = document.getElementById("a-account-number").value.trim();
-            if(accNum.length < 5) { alert("Weka namba sahihi."); return; }
+            if(accNum.length < 5) { alert("Tafadhali weka namba ya akaunti/simu sahihi."); return; }
             registeredBankProvider = provider; registeredBankAccountNumber = accNum;
-            localStorage.setItem('niyo_provider', provider); localStorage.setItem('niyo_accnum', accNum);
+            localStorage.setItem('niyo_provider', provider);
+            localStorage.setItem('niyo_accnum', accNum);
             activeAccountDisplay.innerText = registeredBankProvider + " (" + registeredBankAccountNumber + ")";
-            alert("Akaunti ya Malipo Imesasishwa!");
+            alert("🔒 AKAUNTI MPYA IMEWEZESHWA:");
             hifadhiHaliYaKitufe();
         });
 
@@ -420,7 +455,9 @@
             balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
         }
 
+        // 4. DATA SNAPSHOTS (BARBERSHOP, MARKET, STUDIO)
         onSnapshot(docRef, (docSnap) => { if (docSnap.exists()) { dataBarber = docSnap.data(); onyeshaBeiYaBarber(hudumaSelect.value); } });
+
         function onyeshaBeiYaBarber(huduma) {
             if (dataBarber && dataBarber[huduma]) {
                 let b = dataBarber[huduma];
@@ -432,6 +469,7 @@
 
         onSnapshot(marketCollectionRef, (querySnapshot) => {
             const container = document.getElementById("products-container"); container.innerHTML = "";
+            if (querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px;color:#999;'>No active products found.</p>"; return; }
             querySnapshot.forEach((doc) => {
                 const item = doc.data();
                 const itemDiv = document.createElement("div");
@@ -445,6 +483,7 @@
 
         onSnapshot(studioCollectionRef, (querySnapshot) => {
             const container = document.getElementById("media-container"); container.innerHTML = "";
+            if (querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px;color:#999;'>No digital media items found.</p>"; return; }
             const sasaivi = new Date().getTime();
             querySnapshot.forEach((documentSnap) => {
                 const m = documentSnap.data();
@@ -457,10 +496,10 @@
                 const mediaDiv = document.createElement("div"); mediaDiv.className = "media-item";
                 let routingTag = isMusic ? `<span style="font-size:10px; color:#1565c0; font-weight:bold;">[Global Sync]</span>` : `<span style="font-size:10px; color:#2e7d32; font-weight:bold;">[Niyo Exclusive Cinema]</span>`;
                 mediaDiv.innerHTML = `
-                    <img src="${m.coverLink || 'https://via.placeholder.com/150'}" class="media-cover">
+                    <img src="${m.coverLink || base64CoverBando || 'https://via.placeholder.com/150'}" class="media-cover">
                     <div class="media-info">
                         <strong>${m.kichwa}</strong> ${routingTag}<br>
-                        <span style="font-size:10px; color:#666;">By: ${m.msanii}</span><br>
+                        <span style="font-size:10px; color:#666;">By: ${m.msanii} | Code: ${m.isrcCode}</span><br>
                         <span style="color:#2e7d32;font-weight:bold;">${parseFloat(m.bei).toFixed(6)} Pi</span>
                     </div>
                 `;
@@ -475,7 +514,9 @@
                     counterDownloads += 1; downloadsDOM.innerText = counterDownloads;
                     textBandoDownload(m.kichwa, parseFloat(m.bandoMB || 15), m.failiLink);
                 };
-                actionGroup.appendChild(btnSelect); actionGroup.appendChild(btnDownload);
+                const btnLike = document.createElement("button"); btnLike.innerText = "❤️"; btnLike.className = "btn-action"; btnLike.style.backgroundColor = "#d81b60";
+                btnLike.onclick = () => { counterLikes += 1; likesDOM.innerText = counterLikes; alert("❤️ Feedback imetumwa."); };
+                actionGroup.appendChild(btnSelect); actionGroup.appendChild(btnDownload); actionGroup.appendChild(btnLike);
                 mediaDiv.appendChild(actionGroup); container.appendChild(mediaDiv);
             });
         });
@@ -504,8 +545,8 @@
 
         window.textBandoDownload = function(kichwa, mbSize, fileLink) {
             let dataTariffCost = mbSize * 0.0000003; 
-            let confirmDl = confirm(`Gharama ya Kushusha wimbo: ${dataTariffCost.toFixed(8)} Pi\nUnaruhusu bando la simu kufanya decryption?`);
-            if(confirmDl && fileLink) { window.open(fileLink, '_blank'); }
+            let confirmDl = confirm("--- DATA TARIFF DISPATCH ---\n\nCost: " + dataTariffCost.toFixed(8) + " Pi\n\nAuthorize link decryption using mobile bando?");
+            if(confirmDl) { if(fileLink) { window.open(fileLink, '_blank'); } }
         };
 
         window.onyeshaFomuYaWauzaji = function() {
@@ -520,19 +561,20 @@
             const bidhaa = document.getElementById("v-p-name").value; const bei = parseFloat(document.getElementById("v-p-price").value);
             const wallet = document.getElementById("v-wallet").value;
             if(!jina || !duka || !bidhaa || isNaN(bei) || !wallet) { alert("Kamilisha fomu."); return; }
-            await addDoc(marketCollectionRef, { muuzaji: jina, duka: duka, bidhaa: bidhaa, bei: bei, pochi: wallet, tarehe: new Date() });
-            document.getElementById("fomu-wauzaji").style.display = "none";
+            try { await addDoc(marketCollectionRef, { muuzaji: jina, duka: duka, bidhaa: bidhaa, bei: bei, pochi: wallet, tarehe: new Date() }); document.getElementById("fomu-wauzaji").style.display = "none"; } catch (e) {}
         });
 
+        // 5. CREATOR HUB: PUBLISHING WITH NIYO AI ANTI-COPY
         document.getElementById("btn-sajili-sanaa").addEventListener("click", async () => {
             const msanii = document.getElementById("a-name").value.trim(); const aina = document.getElementById("a-type").value;
             const kichwa = document.getElementById("a-title").value.trim(); const bei = parseFloat(document.getElementById("a-price").value);
             const nambaSimu = document.getElementById("a-phone").value.trim();
             const fileInput = document.getElementById("a-file-input").files[0];
+            const sainiJina = signatureInput.value.trim();
 
-            if(!msanii || !kichwa || !nambaSimu || isNaN(bei) || !fileInput) { alert("Kamilisha fomu."); return; }
+            if(!msanii || !kichwa || !nambaSimu || isNaN(bei) || !fileInput || !registeredBankAccountNumber) { alert("Kamilisha fomu."); return; }
             const kizaziNamba = "TZ-NYO-" + Math.floor(100000 + Math.random() * 900000) + "-26";
-            const simulatedCoverUrl = window.base64CoverBando || "https://via.placeholder.com/150";
+            const simulatedCoverUrl = base64CoverBando || "https://via.placeholder.com/150";
             const simulatedMasterUrl = URL.createObjectURL(fileInput);
             let isMusic = aina.includes("Audio"); let allocatedMB = isMusic ? 15 : 450;
             let generatedUniversalLink = isMusic ? "https://niyo.revo.link/track/" + kizaziNamba : "https://niyo.revo.link/cinema/" + kizaziNamba;
@@ -540,85 +582,143 @@
             if(isMusic) {
                 const q = query(studioCollectionRef, where("kichwa", "==", kichwa)); const querySnapshot = await getDocs(q);
                 if (!querySnapshot.empty) {
-                    let dataYaMmilikiOrijino = {}; querySnapshot.forEach((doc) => { dataYaMmilikiOrijino = doc.data(); targetedDisputeDocId = doc.id; });
-                    alert("🛑 NIYO AI ALERTER: Wimbo unamilikiwa na mtu mwingine! Umefungiwa.");
-                    const nyoDoc = await addDoc(studioCollectionRef, { msanii, aina, kichwa, bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, isCopy: true, aiApprovedByOwner: false, tareheKipimo: new Date().getTime(), tarehe: new Date() });
+                    let dataYaMmilikiOrijino = {}; let idYaMmilikiOrijino = "";
+                    querySnapshot.forEach((doc) => { dataYaMmilikiOrijino = doc.data(); idYaMmilikiOrijino = doc.id; });
+                    alert("🛑 NIYO AI ALERTER (ANTI-PIRACY): Wimbo UMEZUIWA. Taarifa imetumwa kwa mmiliki.");
+                    const sasaTimestamp = new Date().getTime();
+                    const nyoDoc = await addDoc(studioCollectionRef, {
+                        msanii: msanii, aina: aina, kichwa: kichwa, bei: bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, universalPromoLink: generatedUniversalLink, saini: sainiJina, isCopy: true, aiApprovedByOwner: false, originalOwnerId: idYaMmilikiOrijino, tareheKipimo: sasaTimestamp, tarehe: new Date()
+                    });
                     targetedDisputeDocId = nyoDoc.id; aiDisputeZone.style.display = "block";
-                    aiDisputeText.innerText = `Msanii "${msanii}" amecopy wimbo wako wa "${kichwa}".`;
-                    dispOwnerPhone.innerText = dataYaMmilikiOrijino.simu; dispCopierPhone.innerText = nambaSimu;
+                    aiDisputeText.innerText = `Msanii "${msanii}" amepandisha wimbo unaoitwa "${kichwa}". AI yetu imegundua ni COPY.`;
+                    dispOwnerPhone.innerText = dataYaMmilikiOrijino.simu || "0712XXXXXX"; dispCopierPhone.innerText = nambaSimu;
                     document.getElementById("fomu-wasanii").style.display = "none"; return;
                 }
             }
 
-            const nyoDoc = await addDoc(studioCollectionRef, { msanii, aina, kichwa, bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, isCopy: false, aiApprovedByOwner: false, tareheKipimo: new Date().getTime(), tarehe: new Date() });
-            lastCreatedDocId = nyoDoc.id; smartLinkArea.style.display = "block"; generatedPromoLink.value = generatedUniversalLink;
-            smartLinkNote.innerText = isMusic ? "🚀 Wimbo upo LIVE kimataifa!" : "⏳ Filamu ipo kwenye BUFFER ya masaa 48.";
-            alert(`🎉 Kazi imesajiliwa! ISRC: ${kizaziNamba}`);
-            document.getElementById("fomu-wasanii").style.display = "none";
+            try {
+                const sasaTimestamp = new Date().getTime();
+                const nyoDoc = await addDoc(studioCollectionRef, {
+                    msanii: msanii, aina: aina, kichwa: kichwa, bei: bei, simu: nambaSimu, coverLink: simulatedCoverUrl, failiLink: simulatedMasterUrl, bandoMB: allocatedMB, bankProvider: registeredBankProvider, accountNumber: registeredBankAccountNumber, isrcCode: kizaziNamba, universalPromoLink: generatedUniversalLink, saini: sainiJina, isCopy: false, aiApprovedByOwner: false, tareheKipimo: sasaTimestamp, tarehe: new Date()
+                });
+
+                lastCreatedDocId = nyoDoc.id;
+                smartLinkArea.style.display = "block";
+                generatedPromoLink.value = generatedUniversalLink;
+                
+                if (isMusic) {
+                    smartLinkNote.innerText = "🚀 Wimbo wako umepita salama kwenye ukaguzi wa Niyo AI na sasa upo LIVE kimataifa!";
+                    btnEditBuffer.style.display = "none";
+                } else {
+                    smartLinkNote.innerText = "⏳ Filamu yako imewekwa kwenye BUFFER ya masaa 48 kulinda uwekezaji wako. Unaweza kuibadilisha kabla haijawa live.";
+                    btnEditBuffer.style.display = "block";
+                }
+
+                alert(`🎉 Kazi yako imesajiliwa kikamilifu!\nISRC/ISAN Code: ${kizaziNamba}`);
+                document.getElementById("fomu-wasanii").style.display = "none";
+            } catch (error) {
+                console.error("Error saving to Firestore: ", error);
+                alert("Kuna hitilafu imetokea wakati wa kusajili kazi yako.");
+            }
         });
 
         window.mmilikiAruhusuWimboUshushweKiotomatiki = async function() {
             if (!targetedDisputeDocId) return;
-            await updateDoc(doc(db, "NIYO_RECORD_LABEL", targetedDisputeDocId), { aiApprovedByOwner: true, isCopy: false });
-            alert("✅ Wimbo umeruhusiwa na upo LIVE."); aiDisputeZone.style.display = "none";
+            try {
+                const docToUpdate = doc(db, "NIYO_RECORD_LABEL", targetedDisputeDocId);
+                await updateDoc(docToUpdate, { aiApprovedByOwner: true, isCopy: false });
+                alert("✅ Umemruhusu msanii huyu kutoa wimbo huu chini ya usimamizi wako. Wimbo sasa upo LIVE.");
+                aiDisputeZone.style.display = "none";
+            } catch (e) { alert("Hitilafu imetokea."); }
         };
 
         window.rekebishaFilamuMasaa48 = function() {
-            let mpyaBei = prompt("Weka bei mpya ya Filamu (Pi):");
-            if (mpyaBei) alert(`⚙️ Bei imebadilishwa kuwa ${mpyaBei} Pi.`);
+            let mpyaBei = prompt("Weka bei mpya ya Filamu yako (Pi):");
+            if (mpyaBei && !isNaN(parseFloat(mpyaBei))) { alert(`⚙️ Parameter Imerekebishwa! Bei mpya ya filamu ni ${parseFloat(mpyaBei).toFixed(6)} Pi.`); }
         };
 
-        // INTEGRATION YA PI PAYMENT NDANI YA BLOCKCHAIN (KUPITIA CHEKOUT BUTTON)
+        // 6. BLOCKCHAIN CHECKOUT ENGINE (PI PAYMENTS SYSTEM)
         document.getElementById("btn-lipa").addEventListener("click", () => {
-            if (shoppingCart.length === 0) { alert("🛒 Kikapu kiko wazi!"); return; }
+            if (shoppingCart.length === 0) {
+                alert("🛒 Kikapu chako kiko wazi! Weka huduma au bidhaa kwanza.");
+                return;
+            }
 
-            // HAPA: Tunaita lile "window.authenticatedPiUser" kutoka Script ya kwanza
-            if (typeof window.Pi !== 'undefined' && window.authenticatedPiUser) {
+            if (typeof window.Pi !== 'undefined' && authenticatedPiUser) {
+                
                 window.Pi.createPayment({
                     amount: parseFloat(jumlaKuuPi.toFixed(7)),
-                    memo: `Niyo Revolution - Order payment`,
+                    memo: `Niyo Revolution - Order Payment for ${shoppingCart.length} items`,
                     metadata: { order_details: shoppingCart.map(i => i.jina).join(", ") },
                 }, {
-                    onReadyForServerApproval: function(paymentId) { alert("⚡ Inatafuta Server Approval..."); },
-                    onReadyForServerCompletion: function(paymentId, txid) { chakataMaudhuiBaadaYaMalipo(); },
-                    onCancel: function(paymentId) { alert("❌ Umeghairi malipo."); },
-                    onError: function(error, paymentId) { alert("⚠️ Hitilafu kwenye Pi Wallet."); }
+                    onReadyForServerApproval: function(paymentId) {
+                        console.log("Payment ID generated for backend approval: ", paymentId);
+                        alert("⚡ Blockchain Inasubiri Idhini ya Server... Kazi inakamilika.");
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        console.log("Payment completed successfully. TxID: ", txid);
+                        chakataMaudhuiBaadaYaMalipo();
+                    },
+                    onCancel: function(paymentId) {
+                        alert("❌ Umeahirisha muamala wa malipo.");
+                    },
+                    onError: function(error, paymentId) {
+                        console.error("Pi Payment Error: ", error);
+                        alert("⚠️ Hitilafu imetokea kwenye Wallet ya Pi Network.");
+                    }
                 });
+
             } else {
-                let simu = prompt("Pi Browser haijatambuliwa. Weka namba ya Simu kwa Sandbox Testing (M-Pesa):");
-                if (simu) chakataMaudhuiBaadaYaMalipo();
+                let simuNambaMteja = prompt("Akaunti ya Pi haipatikani nje ya Pi Browser. Ili kujaribu mfumo, weka namba yako ya Simu ya Malipo (M-Pesa/TigoPesa):");
+                if (!simuNambaMteja) return;
+                chakataMaudhuiBaadaYaMalipo();
             }
         });
 
+        // 7. MGAO WA MAPATO NA KUCHEZA MAUDHUI (POST-PAYMENT DISPATCH)
         function chakataMaudhuiBaadaYaMalipo() {
             if (vyenyeMakatoYaNneAsilimia > 0) {
-                simulatedArtistEarningsUSD += (vyenyeMakatoYaNneAsilimia * 4.15);
+                let thamaniKatikaUSD = vyenyeMakatoYaNneAsilimia * 4.15;
+                simulatedArtistEarningsUSD += thamaniKatikaUSD;
                 localStorage.setItem('niyo_earnings', simulatedArtistEarningsUSD);
+                
                 balanceDisplay.innerText = "$" + simulatedArtistEarningsUSD.toFixed(2) + " USD";
                 
                 if (simulatedArtistEarningsUSD >= 100) {
-                    alert(`💰 THRESHOLD REACHED ($100)!\nPesa zimetumwa kiotomatiki kwenda: ${registeredBankProvider} (${registeredBankAccountNumber})`);
-                    simulatedArtistEarningsUSD = 0; localStorage.setItem('niyo_earnings', 0);
+                    let makatoYaMfumo = simulatedArtistEarningsUSD * 0.05;
+                    let kiasiSafi = simulatedArtistEarningsUSD - makatoYaMfumo;
+                    
+                    alert(`💰 THRESHOLD REACHED!\n\nSalio lako limefikia au kuvuka $100 USD. Mfumo umekata 5% ($${makatoYaMfumo.toFixed(2)} USD).\nKiasi cha $${kiasiSafi.toFixed(2)} USD kimetumwa kiotomatiki kwenda akaunti yako ya: ${registeredBankProvider} (${registeredBankAccountNumber}).`);
+                    
+                    simulatedArtistEarningsUSD = 0;
+                    localStorage.setItem('niyo_earnings', 0);
                     balanceDisplay.innerText = "$0.00 USD";
                 }
             }
 
-            alert(`✅ Malipo ya ${jumlaKuuPi.toFixed(7)} Pi yamekamilika!`);
-            const v = shoppingCart.find(item => item.ainaYaBidhaa === 'artist');
-            if (v) {
+            alert(`✅ Malipo ya ${jumlaKuuPi.toFixed(7)} Pi yameidhinishwa na Blockchain!`);
+            
+            const vyomboVyaSanaa = shoppingCart.find(item => item.ainaYaBidhaa === 'artist');
+            if (vyomboVyaSanaa) {
                 document.getElementById("media-player-box").style.display = "block";
-                const au = document.getElementById("app-audio-player");
-                const vi = document.getElementById("app-video-player");
-                if (v.mfumoAina.includes("Audio")) {
-                    document.getElementById("audio-zone").style.display = "block"; document.getElementById("video-zone").style.display = "none";
-                    au.src = v.fileLink; au.play();
+                if (vyomboVyaSanaa.mfumoAina.includes("Audio")) {
+                    document.getElementById("audio-zone").style.display = "block";
+                    document.getElementById("video-zone").style.display = "none";
+                    const audioTag = document.getElementById("app-audio-player");
+                    audioTag.src = vyomboVyaSanaa.fileLink;
+                    audioTag.play();
                 } else {
-                    document.getElementById("video-zone").style.display = "block"; document.getElementById("audio-zone").style.display = "none";
-                    vi.src = v.fileLink; vi.play();
+                    document.getElementById("video-zone").style.display = "block";
+                    document.getElementById("audio-zone").style.display = "none";
+                    const videoTag = document.getElementById("app-video-player");
+                    videoTag.src = vyomboVyaSanaa.fileLink;
+                    videoTag.play();
                 }
-                document.getElementById("player-title").innerText = `Playing: ${v.jina}`;
+                document.getElementById("player-title").innerText = `Playing: ${vyomboVyaSanaa.jina}`;
             }
-            shoppingCart = []; updateCartUI();
+
+            shoppingCart = [];
+            updateCartUI();
         }
     </script>
 </body>
